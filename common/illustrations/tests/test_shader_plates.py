@@ -12,6 +12,10 @@ from PIL import Image
 from binding import vellum
 from common.ciphers import decode_lifted_pen_svg
 from common.illustrations.shader_plates import (
+    godel_diophantine_geometry,
+    verify_godel_singlefold_invariants,
+    acoustic_resonator_geometry,
+    solve_viol_acoustic_resonator,
     aperiodic_vault_geometry,
     build_3d_skew_vault_voxels,
     gauss_linking_number,
@@ -36,6 +40,12 @@ _cspec = importlib.util.spec_from_file_location("canon_test_mod", REPO / "books"
 canon_mod = importlib.util.module_from_spec(_cspec)
 _cspec.loader.exec_module(canon_mod)
 
+
+_skew_spec = importlib.util.spec_from_file_location(
+    "skew_canon_mod", REPO / "books" / "02_liber_secundus" / "canon" / "play_skew_vault_canon.py"
+)
+skew_canon_mod = importlib.util.module_from_spec(_skew_spec)
+_skew_spec.loader.exec_module(skew_canon_mod)
 
 class TestShaderPlatesAndVellum(unittest.TestCase):
     def test_hopf_s3_norm_and_unit_linking_invariant(self):
@@ -160,6 +170,66 @@ class TestShaderPlatesAndVellum(unittest.TestCase):
             again = np.asarray(vellum.make_texture(0, seed=17, profile="full", wash_mode="aperiodic"), dtype=np.float32)
             np.testing.assert_array_equal(arrays["aperiodic"], again)
             self.assertGreater(float(np.mean(np.abs(arrays["aperiodic"] - arrays["canon"]))), 0.4)
+
+
+
+    def test_skew_vault_polymetric_canon_invariants_and_audio(self):
+        info = skew_canon_mod.verify_skew_canon_invariants()
+        self.assertEqual(info["d2_minimal_period"], 12)
+        self.assertEqual(info["d3_steps_verified"], 128)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            wav_p = Path(tmp) / "skew_canon.wav"
+            pd_p = Path(tmp) / "skew_canon.pd"
+            meta = skew_canon_mod.render_skew_canon_wav(wav_p)
+            skew_canon_mod.export_pure_data_patch(pd_p)
+            self.assertTrue(wav_p.is_file() and pd_p.is_file())
+            self.assertAlmostEqual(meta["peak_dbfs"], -1.4, delta=0.15)
+
+            with wave.open(str(wav_p), "rb") as wf:
+                self.assertEqual(wf.getnchannels(), 2)
+                self.assertEqual(wf.getframerate(), 48000)
+                self.assertGreater(wf.getnframes(), 48000 * 45)
+
+            pd_lines = [ln.strip() for ln in pd_p.read_text(encoding="utf-8").splitlines() if ln.strip()]
+            self.assertTrue(pd_lines[0].startswith("#N canvas "))
+            obj_lines = [ln for ln in pd_lines[1:] if ln.startswith("#X ") and not ln.startswith("#X connect ")]
+            conn_lines = [ln for ln in pd_lines[1:] if ln.startswith("#X connect ")]
+            self.assertGreaterEqual(len(obj_lines), 45)
+            self.assertGreaterEqual(len(conn_lines), 55)
+            for cln in conn_lines:
+                self.assertTrue(cln.endswith(";"))
+                parts = cln[:-1].split()
+                self.assertEqual(len(parts), 6)
+                src_i, out_i, dst_i, in_i = map(int, parts[2:])
+                self.assertTrue(0 <= src_i < len(obj_lines))
+                self.assertTrue(0 <= dst_i < len(obj_lines))
+
+
+
+    def test_viol_acoustic_resonator_strict_hotspots_and_overtones(self):
+        sol = solve_viol_acoustic_resonator()
+        self.assertAlmostEqual(sol["mean_u2"], 0.0, places=10)
+        self.assertTrue(sol["max_on_boundary"], "Global maximum of u_2 must lie strictly on the non-convex viol boundary.")
+        self.assertTrue(sol["min_on_boundary"], "Global minimum of u_2 must lie strictly on the non-convex viol boundary.")
+        self.assertGreater(sol["min_interior_grad"], 1e-4, "Interior gradient must vanish nowhere on smooth simply connected viol plate.")
+        self.assertAlmostEqual(sol["freq_ratios"][1], 2.0, delta=0.02, msg="Pinched C-bouts tune mode u_3 near 2:1 octave.")
+
+        geom = acoustic_resonator_geometry()
+        self.assertGreater(len(geom["ink_strokes"]), 50)
+        self.assertGreater(len(geom["red_strokes"]), 6)
+        self.assertGreater(len(geom["sand_dots"]), 10)
+
+
+
+    def test_godel_singlefold_pell_diagonal_and_rigidity(self):
+        inv = verify_godel_singlefold_invariants()
+        self.assertEqual(inv["automorphism_count"], 1, "Finite Turing-degree poset foil must have trivial Aut={id}.")
+        self.assertEqual(len(inv["anti_diagonal"]), 8)
+
+        geom = godel_diophantine_geometry()
+        self.assertGreater(len(geom["ink_strokes"]), 60)
+        self.assertGreater(len(geom["red_strokes"]), 15)
 
 
 if __name__ == "__main__":

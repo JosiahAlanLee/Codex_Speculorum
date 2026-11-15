@@ -1,79 +1,191 @@
 {
   "records": [
     {
-      "keys": ["I/S1"],
+      "keys": [
+        "I/S1"
+      ],
       "section": "Bibliography",
       "citation": "Mersenne, Marin (1636). Harmonie universelle, contenant la théorie et la pratique de la musique. Paris: Sébastien Cramoisy.",
       "inspection": "Verified exact integer comma ratio 3^12 / 2^19 = 531441 / 524288 in Liber I.",
       "use": "Establishes non-closure of iterated superparticular ratios against octave powers."
     },
     {
-      "keys": ["I/S2"],
+      "keys": [
+        "I/S2"
+      ],
       "section": "Bibliography",
       "citation": "Hopf, Heinz (1931). Über die Abbildungen der dreidimensionalen Sphäre auf die Kugelfläche. Mathematische Annalen, 104(1), 637–665.",
       "inspection": "Verified algebraically via unit-norm S3 fibers and discrete Gauss linking integral |Lk| = 1 in common/illustrations/shader_plates.py.",
       "use": "Grounds Tabula II (De Fibra Quaternaria) stereographic S3 -> R3 fibration and linked Villarceau circles."
     },
     {
-      "keys": ["I/S3"],
+      "keys": [
+        "I/S3"
+      ],
       "section": "Bibliography",
       "citation": "Möbius, August Ferdinand (1855). Die Theorie der Kreisverwandtschaft in rein geometrischer Darstellung. Abhandlungen der Königlich Sächsischen Gesellschaft der Wissenschaften, 4, 529–595.",
       "inspection": "Verified numerically for 90-degree conformal orthogonality across isothermal Apollonian circles in common/illustrations/shader_plates.py.",
       "use": "Grounds Tabula III (De Speculo Mobiano) conformal inversion grid and two-generator loxodromic limit circles."
     },
     {
-      "keys": ["I/S4"],
+      "keys": [
+        "I/S4"
+      ],
       "section": "Bibliography",
       "citation": "OpenAI Mathematical Corpus (2026). Family 369: Strict Hot-Spots Conjecture on Smooth Bounded Simply Connected Planar Domains (StrictHotSpots.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/369.md).",
       "inspection": "Inspected lean/docs/369.md and verified numerically on the isotropic Neumann Laplacian solver in common/illustrations/shader_plates.py.",
       "use": "Grounds Tabula IV (De Calore in Limite) nonvanishing interior Neumann gradient streamlines and boundary-only thermal extrema."
     },
     {
-      "keys": ["I/S5"],
+      "keys": [
+        "I/S5"
+      ],
       "section": "Bibliography",
       "citation": "OpenAI Mathematical Corpus (2026, October 6–7). Revision History & Withdrawal Notice: Algebraicity of Weil classes on split abelian eightfolds; Algebraicity of Kuga–Satake Correspondences for K3 Surfaces; The rational Hodge conjecture for products of K3 surfaces (https://github.com/openai/math/blob/main/history.md; https://github.com/openai/math/blob/main/preprints/Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026/README.md).",
       "inspection": "Inspected October 7, 2026 withdrawal record documenting I_new = I(f_1) - m = -2m != 0 under reverse stabilization traces.",
       "use": "Grounds the Liber I Disputatio & Obiectio on why formal symmetry fails when a stabilization-trace sign inverts."
     },
     {
-      "keys": ["I/S6"],
+      "keys": [
+        "I/S6"
+      ],
       "section": "Bibliography",
       "citation": "Rigidity, flexibility, and a sign error (2026, October 22). Preprint analysis of obstructed Lagrangian immersions and the residual degree-2 self-intersection point p in the withdrawn K3 Hodge manuscripts (https://arxiv.org/html/2610.30976v1).",
       "inspection": "Inspected Summary & Section 3.2 showing Gromov-Lees h-principle stabilization leaves an unremovable degree-2 double point p.",
       "use": "Grounds the Liber I Responsum distinguishing flexible formal elegance from rigid topological obstruction."
     },
     {
-      "keys": ["II/S1"],
+      "keys": [
+        "II/S1"
+      ],
       "section": "Bibliography",
       "citation": "Bhattacharya, Siddhartha (2020). Periodicity and decidability of tilings of Z^2. American Journal of Mathematics, 142(1), 255–266 (surveyed with quantitative periodicization in https://www.researchgate.net/publication/301844179_Periodicity_and_decidability_of_tilings_of_Z2).",
       "inspection": "Verified planar periodic-complement theorem for finite translational tiles in Z^2 vs. dimension-three failure.",
       "use": "Establishes that every single finite translational tile of Z^2 admits a fully periodic tiling."
     },
     {
-      "keys": ["II/S2"],
+      "keys": [
+        "II/S2"
+      ],
       "section": "Bibliography",
       "citation": "Greenfeld, Rachel, & Tao, Terence (2022–2024). A counterexample to the periodic tiling conjecture (https://arxiv.org/html/2209.08451v1; https://arxiv.org/html/2211.15847v3).",
       "inspection": "Inspected abstract and announcement proving failure of the Periodic Tiling Conjecture in sufficiently high dimension via p-adically structured functional equations.",
       "use": "Grounds the high-dimensional disproof preceding the sharp minimal-dimension question d = 3."
     },
     {
-      "keys": ["II/S3"],
+      "keys": [
+        "II/S3"
+      ],
       "section": "Bibliography",
       "citation": "OpenAI Mathematical Corpus (2026). Family 155: A counterexample to periodic tiling in dimension three / A translational tile with no fully periodic tiling in dimension three (PeriodicTilingThree.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/155.md; Lean theorem statement at https://prove2.me/theorems/c384612f-9658-4aff-bf84-1336e003988b).",
       "inspection": "Inspected lean/docs/155.md and OAI.PeriodicTilingThree.periodic_tiling_counterexample_and_minimality verifying finite T subset Z^3, unit-cube thickening in R^3, absence of any finite-index period subgroup, and sharp minimality d = 3.",
       "use": "Grounds Liber II (Bibliotheca Sine Periodo) and Tabula VI's contrast between d = 2 periodicity and d = 3 non-periodic translational vaults."
     },
     {
-      "keys": ["II/S4"],
+      "keys": [
+        "II/S4"
+      ],
       "section": "Bibliography",
       "citation": "Borges, Jorge Luis (1941). La biblioteca de Babel. In El jardín de senderos que se bifurcan. Buenos Aires: Editorial Sur.",
       "inspection": "Referenced for the closing hypothesis of the Eternal Traveler's periodic Order in a hexagonal gallery.",
       "use": "Frames the Liber II dialogue testing whether translational regularity across three spatial axes entails periodic recurrence."
     },
     {
-      "keys": ["Pr/R1"],
+      "keys": [
+        "III/S1"
+      ],
+      "section": "Bibliography",
+      "citation": "Chladni, Ernst Florens Friedrich (1787). Entdeckungen über die Theorie des Klanges. Leipzig: Weidmanns Erben und Reich (https://archive.org/details/entdeckungenuber00chla; plates curated at https://publicdomainreview.org/collection/chladni-figures-1787/).",
+      "inspection": "Inspected 1787 Wittenberg sand-figure method and free-edge bowing/finger-damping nodal protocol.",
+      "use": "Grounds the Liber III dialogue and distinguishes fourth-order Kirchhoff-Love elastic plates from second-order Neumann acoustic cavities."
+    },
+    {
+      "keys": [
+        "III/S2"
+      ],
+      "section": "Bibliography",
+      "citation": "Burdzy, Krzysztof, & Werner, Wendelin (1999). A counterexample to the 'hot spots' conjecture. Annals of Mathematics, 149(1), 309–317 (https://arxiv.org/abs/math/9803030); surveyed in Burdzy (2006), Neumann eigenfunctions and Brownian couplings (https://projecteuclid.org/ebooks/advanced-studies-in-pure-mathematics/Potential-Theory-in-Matsue/chapter/Neumann-eigenfunctions-and-Brownian-couplings/10.2969/aspm/04410011.pdf).",
+      "inspection": "Verified doubly connected two-hole planar counterexample trapping the strict Neumann maximum at an interior point.",
+      "use": "Grounds the twin-sound-hole topological foil in Liber III and Tabula VII's upper-right medallion."
+    },
+    {
+      "keys": [
+        "III/S3"
+      ],
+      "section": "Bibliography",
+      "citation": "OpenAI Mathematical Corpus (2026). Family 369: Strict hot spots and absence of interior critical points on smooth simply connected planar domains (HotSpots.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/369.md; https://github.com/openai/math/blob/main/lean/ComparatorChallenges/HotSpots.lean; nonsmooth conformal extension in https://arxiv.org/html/2610.32920v1).",
+      "inspection": "Inspected lean/docs/369.md confirming nonvanishing interior gradient across every nonzero first positive Neumann eigenfunction on smooth bounded simply connected planar domains, without convexity or simplicity assumptions.",
+      "use": "Grounds Liber III (Cista Resonantiae) and the 4,603-node non-convex waisted viol resonator verification in Tabula VII."
+    },
+    {
+      "keys": [
+        "III/S4"
+      ],
+      "section": "Bibliography",
+      "citation": "Near-boundary rigidity and strict maximum modulus for Neumann eigenfunctions on convex planar domains (2026, October). Preprint analysis of convex planar domains and sharp factor-4 rigidity (https://arxiv.org/html/2610.18546v1).",
+      "inspection": "Inspected abstract and Section 1 establishing strict boundary maximum modulus on bounded convex planar domains without smoothness or simplicity.",
+      "use": "Situates Family 369 alongside nonsmooth convex near-boundary rigidity."
+    },
+    {
+      "keys": [
+        "III/S5"
+      ],
+      "section": "Bibliography",
+      "citation": "Atar, Rami, & Burdzy, Krzysztof (2026, October 14). A starlike 3-dimensional counterexample to the hot spots conjecture (https://arxiv.org/html/2610.19908v1).",
+      "inspection": "Inspected Section 1 showing a bounded starlike Lipschitz domain in R^3 whose simple first positive Neumann eigenfunction attains its unique global maximum at the interior origin 0.",
+      "use": "Grounds the dimension-three breakdown foil in Liber III and Tabula VII's lower-right medallion."
+    },
+    {
+      "keys": [
+        "IV/S1"
+      ],
+      "section": "Bibliography",
+      "citation": "Gödel, Kurt (1931). Über formal unentscheidbare Sätze der Principia Mathematica und verwandter Systeme I. Monatshefte für Mathematik und Physik, 38(1), 173–198 (https://www.semanticscholar.org/paper/%C3%9Cber-formal-unentscheidbare-S%C3%A4tze-der-Principia-und-G%C3%B6del/c8a2dde937f74eb14d9499575cbe1ac586ee08f2).",
+      "inspection": "Referenced for prime-power arithmetization of syntax and diagonal self-substitution.",
+      "use": "Frames Liber IV's eight-prime self-numbering dialogue and Tabula VIII's outer 16-prime astrolabe."
+    },
+    {
+      "keys": [
+        "IV/S2"
+      ],
+      "section": "Bibliography",
+      "citation": "Matiyasevich, Yuri V. (2012). What Can and Cannot Be Done with Diophantine Problems. Proceedings of the Steklov Institute of Mathematics, 275(1) (https://www.researchgate.net/publication/257846814_What_Can_and_Cannot_Be_Done_with_Diophantine_Problems; Hilbert's Tenth Problem survey at https://www.researchgate.net/publication/265371935_Hilbert's_Tenth_Problem_What_was_done_and_what_is_to_be_done).",
+      "inspection": "Verified DPRM polynomial encoding of recursively enumerable sets and Pell-equation exponential growth x^2 - (a^2 - 1)y^2 = 1.",
+      "use": "Grounds the Pell-Matiyasevich hyperbola sheaves and multi-fold witness baseline in Liber IV."
+    },
+    {
+      "keys": [
+        "IV/S3"
+      ],
+      "section": "Bibliography",
+      "citation": "Matiyasevich, Yuri V. (1974). Existence of noneffectivizable estimates in the theory of exponentially Diophantine equations (surveyed in https://www.researchgate.net/publication/330320299_On_Sets_mathcal_X_subseteq_mathbb_N_for_Which_We_Know_an_Algorithm_That_Computes_a_Threshold_Number_tmathcal_X_in_mathbb_N_Such_That_mathcal_X_Is_Infinite_If_and_Only_If_mathcal_X_Contains_an_eLement_).",
+      "inspection": "Verified historical formulation of the 1974 Single-Fold Diophantine Conjecture contrasting exponential vs. genuine polynomial single-fold witnesses.",
+      "use": "Frames the Censor's uniqueness hypothesis in the Liber IV dialogue."
+    },
+    {
+      "keys": [
+        "IV/S4"
+      ],
+      "section": "Bibliography",
+      "citation": "OpenAI Mathematical Corpus (2026). Family 242: Single-fold Diophantine representations and undecidability under an at-most-one-solution promise (Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/242.md; cataloged at https://kisonecat.github.io/openai-math/mathematical-logic.html).",
+      "inspection": "Inspected Lean formalization scope establishing single-fold polynomial Diophantine representations for every recursively enumerable subset of N^n (n >= 1) and undecidability under at-most-one-solution promises.",
+      "use": "Grounds Liber IV (Testis Unicus) and Tabula VIII's single-fold witness fiber projection."
+    },
+    {
+      "keys": [
+        "IV/S5"
+      ],
+      "section": "Bibliography",
+      "citation": "OpenAI Mathematical Corpus (2026). Family 241: Rigidity of the Turing degrees (DegreeRigidity.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/241.md; https://www.emergentmind.com/openai-math-explorer/results/241).",
+      "inspection": "Inspected lean/docs/241.md confirming that every order automorphism of the full partial order of Turing degrees is the identity.",
+      "use": "Grounds the absence of mirror symmetries at the close of Liber IV and Tabula VIII's rigid Hasse poset medallion."
+    },
+    {
+      "keys": [
+        "Pr/R1"
+      ],
       "section": "Project records",
-      "citation": "Codex Series Press Scaffold (2026). Extracted architectural baseline from JosiahAlanLee/Codex-Intervallorum (commit cbd7012) with Volume II Liber I & Liber II ports.",
+      "citation": "Codex Series Press Scaffold (2026). Extracted architectural baseline from JosiahAlanLee/Codex-Intervallorum (commit cbd7012) with Volume II Liber I–IV ports.",
       "inspection": "Verified offline via scripts/build.py and binding/validate_typeset.py.",
       "use": "Establishes shared 7x10 trim, 96-dpi mathematical vellum washes, rubricated falsifier scales, and ground-ordered Nota Clausa interface."
     }

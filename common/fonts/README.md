@@ -1,6 +1,6 @@
 # Shared press typefaces
 
-The IM Fell English and IBM Plex Mono files come from [Codex Intervallorum at `cbd7012`](https://github.com/JosiahAlanLee/Codex-Intervallorum/tree/cbd7012714197c638931b500922936727efdf64f/common/fonts). DejaVu Serif 2.37 supplies mathematical glyphs such as `ℤ`, `ℝ`, and `↦` in Book II. The build registers these typefaces from this directory.
+The IM Fell English and IBM Plex Mono files come from [Codex Intervallorum at `cbd7012`](https://github.com/JosiahAlanLee/Codex-Intervallorum/tree/cbd7012714197c638931b500922936727efdf64f/common/fonts). DejaVu Serif 2.37 supplies mathematical glyphs such as `ℤ`, `∇`, and `ℕ` in Books II–IV. The build registers these typefaces from this directory.
 
 | Typeface | License notice |
 | --- | --- |

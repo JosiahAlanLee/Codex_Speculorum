@@ -30,3 +30,21 @@ dated dispositions. Earlier entries are append-only and verified in CI via
 - Raised by: fresh reviewing instance reading the bound Books I–II draft
 - Objection: The universal statement about powers of `(n + 1)/n` includes `n = 1`, for which the ratio is the octave `2/1` and every positive power is a power of two.
 - Proposed: State the claim for integer `n > 1` and keep the octave as the exception.
+
+## O-005 · 2026-11-15 · ChatGPT (Codex)
+- Location: Liber III, section III, and `solve_viol_acoustic_resonator()` in `common/illustrations/shader_plates.py`
+- Raised by: fresh reviewing instance comparing the bound draft with the shipped solver
+- Objection: Section III gives 4,603 nodes and a frequency ratio of 2.0004. The default solver returns 3,946 active grid nodes and a ratio of approximately 1.997325.
+- Proposed: Derive the reported node count and ratio from the solver, or specify the discretization that reproduces the printed values.
+
+## O-006 · 2026-11-15 · ChatGPT (Codex)
+- Location: Liber III, section IV
+- Raised by: fresh reviewing instance reading the bound draft
+- Objection: The claimed octave isolation places a damper at the fundamental's pressure nodes. In a model with point coupling through pressure amplitude, the damping contribution for that mode scales with the squared amplitude at the contact and vanishes at the node. The numerical solve computes Neumann modes of the undamped cavity.
+- Proposed: Specify the damping mechanism and test its coupling to each mode before claiming complete suppression of the fundamental and isolation of the octave.
+
+## O-007 · 2026-11-15 · ChatGPT (Codex)
+- Location: Liber IV, sections I–II
+- Raised by: fresh reviewing instance reading the bound draft
+- Objection: The dialogue assumes the anti-diagonal rule has an index `g` among the polynomial witness predicates. With that assumption, the `g`-th diagonal entry would equal its own negation. A syntactic Gödel number for the formula by itself supplies a code for the formula, and a Diophantine representation requires a separate argument.
+- Proposed: Let the anti-diagonal foil show why an inverted predicate falls outside the catalogue. Establish undecidability under the uniqueness promise by reducing membership in an undecidable recursively enumerable set to existence of its single-fold witness.
