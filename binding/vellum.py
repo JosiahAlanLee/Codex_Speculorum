@@ -172,9 +172,9 @@ def apply(
             protected_boxes_pt=default_protected if has_content else (),
             wash_mode=w_mode,
         )
-        bg_page = _background_pdf_page(tex)
+        # Attach the page first so pypdf can replace its content stream.
+        bg_page = writer.add_page(_background_pdf_page(tex))
         bg_page.merge_page(fg_page)
-        writer.add_page(bg_page)
 
     meta = dict(reader.metadata or {})
     meta["/Subject"] = f"{STAMP}:{profile}:seed={seed}"
