@@ -25,7 +25,7 @@ to build a single omnibus. Both commands rebuild the components.
 | Illustrated PDF and binding log | `binding/out/illustrated/` |
 | Component PDFs and plate maps | `books/*/out/` |
 | Plotter SVGs and wash previews | `books/*/build/` |
-| Book I WAV and Pure Data patch | `books/01_liber_primus/canon/out/` |
+| Books I–II WAVs and Pure Data patches | `books/*/canon/out/` |
 
 With the same dependencies, the build fixes the PDF timestamp through
 `SOURCE_DATE_EPOCH` unless the caller has set it. GitHub Actions packages these

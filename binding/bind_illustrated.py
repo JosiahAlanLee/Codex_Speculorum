@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-Assembles the ungrounded vector omnibus and finishes it through `binding/vellum.py`
-(dynamically mapping every book's `out/plates-map.json` plate leaves to their
-paired 96-dpi `hopf`, `mobius`, `hotspots`, `canon`, and `aperiodic` washes)
-to produce `binding/out/illustrated/<slug>_illustrated.pdf`.
+Assembles the vector omnibus and pairs each plate leaf with its 96-dpi vellum
+wash from the book's `out/plates-map.json`. Writes the finished edition to
+`binding/out/illustrated/<slug>_illustrated.pdf`.
 """
 
 import argparse

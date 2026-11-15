@@ -4,7 +4,10 @@
   "slug": "Codex_Speculorum",
   "title": "Codex Speculorum",
   "subtitle": "Liber Canonum — Of Symmetry, Logic, Canon & Remainder",
-  "trim_pt": [504.0, 720.0],
+  "trim_pt": [
+    504.0,
+    720.0
+  ],
   "palette": {
     "paper": "#ede6d4",
     "ink": "#161918",
@@ -32,6 +35,20 @@
       "kind": "treatise",
       "reading_pdf": "books/02_liber_secundus/out/02_liber_secundus_reading.pdf",
       "illustrated_pdf": "books/02_liber_secundus/out/02_liber_secundus_illustrated.pdf"
+    },
+    {
+      "id": "03_liber_tertius",
+      "title": "Liber III · Cista Resonantiae",
+      "kind": "treatise",
+      "reading_pdf": "books/03_liber_tertius/out/03_liber_tertius_reading.pdf",
+      "illustrated_pdf": "books/03_liber_tertius/out/03_liber_tertius_illustrated.pdf"
+    },
+    {
+      "id": "04_liber_quartus",
+      "title": "Liber IV · Testis Unicus",
+      "kind": "treatise",
+      "reading_pdf": "books/04_liber_quartus/out/04_liber_quartus_reading.pdf",
+      "illustrated_pdf": "books/04_liber_quartus/out/04_liber_quartus_illustrated.pdf"
     },
     {
       "id": "07_clausa",

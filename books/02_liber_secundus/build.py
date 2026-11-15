@@ -9,7 +9,6 @@ and emits `out/plates-map.json` + standalone `tabula-vi-aperiodic-vault.svg` and
 import importlib.util
 import json
 from pathlib import Path
-import re
 import sys
 from typing import Dict, List, Tuple
 
@@ -22,6 +21,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
 from binding import vellum
 from common.illum import furniture as fu
+from common.illum.styled_text import draw_styled_line, tokenize_styled_words, wrap_styled_tokens
 
 BOOK_DIR = Path(__file__).resolve().parent
 
@@ -29,111 +29,15 @@ _tab_spec = importlib.util.spec_from_file_location("tabulae2_mod", BOOK_DIR / "p
 tabulae = importlib.util.module_from_spec(_tab_spec)
 _tab_spec.loader.exec_module(tabulae)
 
+_canon_spec = importlib.util.spec_from_file_location("skew_canon_mod", BOOK_DIR / "canon" / "play_skew_vault_canon.py")
+skew_canon_mod = importlib.util.module_from_spec(_canon_spec)
+_canon_spec.loader.exec_module(skew_canon_mod)
+
 PLATE_DISPATCH = {
     "tabula_vi": ("draw_tabula_vi_vault_pdf_leaf", "aperiodic", tabulae.LIFTED_VI.upper()),
 }
 
 SPEAKERS = ("SCULPTOR:", "CUSTOS:")
-_SPAN_RE = re.compile(r"\*([^*]+)\*")
-
-StyledWord = List[Tuple[str, bool]]
-
-
-def _tokenize_styled_words(text: str) -> List[StyledWord]:
-    """
-    Splits whitespace-delimited words into intra-word `(sub_segment, is_italic)` runs
-    so punctuation directly adjacent to `*italic*` spans (`(*Fornix Sine Periodo*)`,
-    `*three*,`) never acquires artificial spaces.
-    """
-    cleaned = text.replace("**", "").replace("`", "")
-    # Replace spaces inside `*...*` with a sentinel so we can split on outer whitespace cleanly
-    SENT = "\x00"
-    marked = _SPAN_RE.sub(lambda m: "*" + m.group(1).replace(" ", SENT) + "*", cleaned)
-    words_out: List[StyledWord] = []
-    for raw_tok in marked.split():
-        # Expand sentinel spaces back into separate styled words while keeping attached punctuation tight
-        parts = raw_tok.split(SENT)
-        in_it = False
-        for part in parts:
-            segs: StyledWord = []
-            buf: List[str] = []
-            for ch in part:
-                if ch == "*":
-                    if buf:
-                        segs.append(("".join(buf), in_it))
-                        buf = []
-                    in_it = not in_it
-                else:
-                    buf.append(ch)
-            if buf:
-                segs.append(("".join(buf), in_it))
-            if segs:
-                words_out.append(segs)
-    return words_out
-
-
-def _segment_font(text: str, preferred: str) -> str:
-    glyphs = getattr(pdfmetrics.getFont(preferred).face, "charToGlyph", {})
-    if all(ord(char) in glyphs for char in text):
-        return preferred
-    return fu.fonts()["Math"]
-
-
-def _word_width(word: StyledWord, rom_font: str, it_font: str, size: float) -> float:
-    return sum(
-        pdfmetrics.stringWidth(seg, _segment_font(seg, it_font if is_it else rom_font), size)
-        for seg, is_it in word
-    )
-
-
-def _wrap_styled_tokens(
-    words: List[StyledWord],
-    rom_font: str,
-    it_font: str,
-    size: float,
-    max_w: float,
-    first_max_w: float | None = None,
-) -> List[List[StyledWord]]:
-    lines: List[List[StyledWord]] = []
-    cur: List[StyledWord] = []
-    cur_w = 0.0
-    space_w = pdfmetrics.stringWidth(" ", rom_font, size)
-
-    for word in words:
-        ww = _word_width(word, rom_font, it_font, size)
-        limit = first_max_w if (not lines and first_max_w is not None) else max_w
-        needed = ww if not cur else (space_w + ww)
-        if cur and (cur_w + needed > limit):
-            lines.append(cur)
-            cur = [word]
-            cur_w = ww
-        else:
-            cur.append(word)
-            cur_w += needed
-    if cur:
-        lines.append(cur)
-    return lines
-
-
-def _draw_styled_line(
-    c: canvas.Canvas,
-    x: float,
-    y: float,
-    line_words: List[StyledWord],
-    rom_font: str,
-    it_font: str,
-    size: float,
-) -> None:
-    cx = x
-    space_w = pdfmetrics.stringWidth(" ", rom_font, size)
-    for idx, word in enumerate(line_words):
-        if idx > 0:
-            cx += space_w
-        for seg, is_it in word:
-            fnt = _segment_font(seg, it_font if is_it else rom_font)
-            c.setFont(fnt, size)
-            c.drawString(cx, y, seg)
-            cx += pdfmetrics.stringWidth(seg, fnt, size)
 
 
 def parse_manuscript_items(md_path: Path) -> Tuple[str, List[Tuple[str, str]]]:
@@ -251,9 +155,9 @@ def render_book(out_pdf: Path, paint_ground: bool) -> Dict[str, Dict]:
         elif kind == "para":
             speaker_prefix = next((sp for sp in SPEAKERS if payload.startswith(sp)), None)
             if speaker_prefix:
-                rest_tokens = _tokenize_styled_words(payload[len(speaker_prefix) :])
+                rest_tokens = tokenize_styled_words(payload[len(speaker_prefix) :])
                 sp_w = pdfmetrics.stringWidth(speaker_prefix + " ", fmap["FellSC"], 9.5)
-                lines = _wrap_styled_tokens(
+                lines = wrap_styled_tokens(
                     rest_tokens,
                     fmap["Fell"],
                     fmap["FellIt"],
@@ -268,28 +172,28 @@ def render_book(out_pdf: Path, paint_ground: bool) -> Dict[str, Dict]:
                 c.setFont(fmap["FellSC"], 9.5)
                 c.drawString(margin_x, y, speaker_prefix)
                 c.setFillColor(HexColor(fu.HEX_INK))
-                _draw_styled_line(c, margin_x + sp_w, y, lines[0], fmap["Fell"], fmap["FellIt"], 10.0)
+                draw_styled_line(c, margin_x + sp_w, y, lines[0], fmap["Fell"], fmap["FellIt"], 10.0)
                 y -= 13.8
                 for cl in lines[1:]:
-                    _draw_styled_line(c, margin_x + 14.0, y, cl, fmap["Fell"], fmap["FellIt"], 10.0)
+                    draw_styled_line(c, margin_x + 14.0, y, cl, fmap["Fell"], fmap["FellIt"], 10.0)
                     y -= 13.8
                 y -= 5.0
             else:
-                p_tokens = _tokenize_styled_words(payload)
-                p_lines = _wrap_styled_tokens(p_tokens, fmap["Fell"], fmap["FellIt"], 10.1, max_w)
+                p_tokens = tokenize_styled_words(payload)
+                p_lines = wrap_styled_tokens(p_tokens, fmap["Fell"], fmap["FellIt"], 10.1, max_w)
                 total_h = len(p_lines) * 13.8 + 5.5
                 if y - total_h < bottom_y:
                     open_prose_page(first_page=False)
                 c.setFillColor(HexColor(fu.HEX_INK))
                 for pl in p_lines:
-                    _draw_styled_line(c, margin_x, y, pl, fmap["Fell"], fmap["FellIt"], 10.1)
+                    draw_styled_line(c, margin_x, y, pl, fmap["Fell"], fmap["FellIt"], 10.1)
                     y -= 13.8
                 y -= 5.5
 
         elif kind == "quote":
             q_clean = payload.replace("**", "").replace("`", "").replace("*", "")
             q_words = [[(word, True)] for word in q_clean.split()]
-            q_wrapped = _wrap_styled_tokens(q_words, fmap["FellIt"], fmap["FellIt"], 9.5, max_w - 20.0)
+            q_wrapped = wrap_styled_tokens(q_words, fmap["FellIt"], fmap["FellIt"], 9.5, max_w - 20.0)
             if y - (len(q_wrapped) * 12.9 + 9.0) < bottom_y:
                 open_prose_page(first_page=False)
             q_top = y + 8.0
@@ -303,7 +207,7 @@ def render_book(out_pdf: Path, paint_ground: bool) -> Dict[str, Dict]:
                     q_top = y + 8.0
                     c.setFillColor(HexColor(fu.HEX_INK))
                     c.setFont(fmap["FellIt"], 9.5)
-                _draw_styled_line(c, margin_x + 14.0, y, ql, fmap["FellIt"], fmap["FellIt"], 9.5)
+                draw_styled_line(c, margin_x + 14.0, y, ql, fmap["FellIt"], fmap["FellIt"], 9.5)
                 y -= 12.9
             hnd = fu.Hand(c, amp=0.0)
             hnd.stroke([(margin_x + 5.0, q_top), (margin_x + 5.0, y + 8.0)], weight="cip", color="red")
@@ -318,14 +222,18 @@ def render_book(out_pdf: Path, paint_ground: bool) -> Dict[str, Dict]:
 def main() -> None:
     build_dir = BOOK_DIR / "build"
     out_dir = BOOK_DIR / "out"
+    canon_out = BOOK_DIR / "canon" / "out"
 
     tabulae.build_tabula_vi_vault_svg(build_dir / "tabula-vi-aperiodic-vault.svg")
     vellum.export_wash_png(build_dir / "vellum-aperiodic-96dpi.png", wash_mode="aperiodic", seed=17, profile="full")
 
+    skew_canon_mod.render_skew_canon_wav(canon_out / "canon_polymetricus_sine_periodo.wav")
+    skew_canon_mod.export_pure_data_patch(canon_out / "skew_vault_polymetric_canon.pd")
+
     plates_meta = render_book(out_dir / "02_liber_secundus_reading.pdf", paint_ground=True)
     render_book(out_dir / "02_liber_secundus_illustrated.pdf", paint_ground=False)
     (out_dir / "plates-map.json").write_text(json.dumps(plates_meta, indent=2) + "\n", encoding="utf-8")
-    print("[02_liber_secundus] Built Tabula VI SVG, 96-dpi aperiodic wash, and reading/illustrated PDFs.")
+    print("[02_liber_secundus] Built Tabula VI SVG, 96-dpi aperiodic wash, 48 kHz skew canon WAV/PD, and PDFs.")
 
 
 if __name__ == "__main__":

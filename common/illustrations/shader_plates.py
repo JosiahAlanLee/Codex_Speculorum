@@ -1282,3 +1282,692 @@ def aperiodic_vellum_field(nx: np.ndarray, ny: np.ndarray) -> Tuple[np.ndarray, 
     warm = np.clip(env * (0.5 + 0.5 * shear * cross), 0.0, 1.0).astype(np.float32)
     cool = np.clip(env * (0.5 - 0.5 * shear) * (0.5 + 0.5 * np.cos(6.0 * yy)), 0.0, 1.0).astype(np.float32)
     return warm, cool
+
+
+# ---------------------------------------------------------------------------
+# 6. Book III Acoustic Resonator (`Tabula VII · Cista Resonantiae Chladniana`)
+# ---------------------------------------------------------------------------
+
+def viol_resonator_phi(x_mm: np.ndarray, y_mm: np.ndarray, cx: float = 85.0, cy: float = 98.5) -> np.ndarray:
+    """
+    Smooth (`C^infty`), bounded, simply connected, **non-convex** waisted luthiery
+    viol soundboard `Phi_viol(x, y) <= 1`:
+      - Pinched inward at the C-bout waist near `Y = -0.06`
+      - Broader lower bout (`Y > 0`) than upper bout (`Y < 0`).
+    Tests `openai/math` Family 369 (`HotSpots.lean`) beyond convex domains!
+    """
+    Y = (y_mm - cy) / 43.5
+    w = 25.5 * (1.0 + 0.14 * Y - 0.30 * np.exp(-((Y + 0.06) / 0.34) ** 2) + 0.12 * (Y ** 2))
+    return ((x_mm - cx) / w) ** 2 + Y ** 2
+
+
+def solve_viol_acoustic_resonator(cx: float = 85.0, cy: float = 98.5, h_mm: float = 0.90) -> Dict:
+    """
+    Solves the 5-point finite-volume Neumann Laplacian `-Delta u = mu_k u` (`d_nu u = 0`)
+    for the first 6 eigenmodes (`mu_1 = 0 < mu_2 <= ... <= mu_6`) on the non-convex
+    waisted viol soundboard `Phi_viol <= 1`, verifying:
+      - Orthogonality `mean(u_2) == 0`
+      - Nonvanishing interior gradient `min_{Omega^o} |grad u_2| > 0`
+      - Boundary-only global extrema (`max` and `min` strictly on `dOmega`)
+      - Acoustic overtone frequency ratios `sqrt(mu_k / mu_2)` (`k = 2..7`).
+    """
+    xs = np.arange(cx - 35.0, cx + 35.5, h_mm, dtype=np.float64)
+    ys = np.arange(cy - 46.5, cy + 46.5 + 0.5 * h_mm, h_mm, dtype=np.float64)
+    XX, YY = np.meshgrid(xs, ys, indexing="xy")
+    phi = viol_resonator_phi(XX, YY, cx=cx, cy=cy)
+    inside = phi <= 1.0
+
+    ny, nx = inside.shape
+    node_id = np.full((ny, nx), -1, dtype=np.int32)
+    pts_ij = np.argwhere(inside)
+    n_nodes = len(pts_ij)
+    for k, (j, i) in enumerate(pts_ij):
+        node_id[j, i] = k
+
+    rows: List[int] = []
+    cols: List[int] = []
+    vals: List[float] = []
+    diag = np.zeros(n_nodes, dtype=np.float64)
+    is_boundary = np.zeros(n_nodes, dtype=bool)
+
+    for k, (j, i) in enumerate(pts_ij):
+        deg = 0
+        for dj, di in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            nj, ni = j + dj, i + di
+            if 0 <= nj < ny and 0 <= ni < nx and node_id[nj, ni] >= 0:
+                rows.append(k)
+                cols.append(int(node_id[nj, ni]))
+                vals.append(-1.0)
+                deg += 1
+        diag[k] = float(deg)
+        if deg < 4:
+            is_boundary[k] = True
+
+    rows.extend(range(n_nodes))
+    cols.extend(range(n_nodes))
+    vals.extend(diag.tolist())
+    L = sparse.csr_matrix((vals, (rows, cols)), shape=(n_nodes, n_nodes))
+
+    v0 = np.array([cy - ys[j] for (j, _) in pts_ij], dtype=np.float64)
+    evals, evecs = eigsh(L, k=7, sigma=-1e-5, which="LM", v0=v0)
+    order = np.argsort(evals)
+    evals = evals[order]
+    evecs = evecs[:, order]
+
+    # Mode u_2 (first positive Neumann eigenfunction, index 1)
+    u2 = evecs[:, 1].copy()
+    top_k = int(np.argmin([ys[j] for (j, _) in pts_ij]))
+    if u2[top_k] < 0:
+        u2 = -u2
+    u2 /= float(np.max(np.abs(u2)))
+
+    max_k = int(np.argmax(u2))
+    min_k = int(np.argmin(u2))
+
+    def unpack_mode(col_idx: int) -> np.ndarray:
+        vec = evecs[:, col_idx].copy()
+        vec /= float(np.max(np.abs(vec)))
+        arr = np.full((ny, nx), np.nan, dtype=np.float64)
+        for k_i, (j_i, i_i) in enumerate(pts_ij):
+            arr[j_i, i_i] = vec[k_i]
+        return arr
+
+    field_u2 = np.full((ny, nx), np.nan, dtype=np.float64)
+    for k, (j, i) in enumerate(pts_ij):
+        field_u2[j, i] = u2[k]
+
+    grad_mag_interior: List[float] = []
+    gx_grid = np.zeros((ny, nx), dtype=np.float64)
+    gy_grid = np.zeros((ny, nx), dtype=np.float64)
+    for k, (j, i) in enumerate(pts_ij):
+        im = i - 1 if (i > 0 and inside[j, i - 1]) else i
+        ip = i + 1 if (i + 1 < nx and inside[j, i + 1]) else i
+        jm = j - 1 if (j > 0 and inside[j - 1, i]) else j
+        jp = j + 1 if (j + 1 < ny and inside[j + 1, i]) else j
+        gx = (field_u2[j, ip] - field_u2[j, im]) / max(h_mm, (ip - im) * h_mm)
+        gy = (field_u2[jp, i] - field_u2[jm, i]) / max(h_mm, (jp - jm) * h_mm)
+        gx_grid[j, i] = gx
+        gy_grid[j, i] = gy
+        if not is_boundary[k]:
+            grad_mag_interior.append(math.hypot(gx, gy))
+
+    freq_ratios = [float(math.sqrt(evals[m] / evals[1])) for m in range(1, 7)]
+    j_max, i_max = pts_ij[max_k]
+    j_min, i_min = pts_ij[min_k]
+
+    return {
+        "xs": xs,
+        "ys": ys,
+        "phi": phi,
+        "inside": inside,
+        "field_u2": field_u2,
+        "field_u4": unpack_mode(3),
+        "field_u5": unpack_mode(4),
+        "gx": gx_grid,
+        "gy": gy_grid,
+        "mu_2": float(evals[1]) / (h_mm * h_mm),
+        "freq_ratios": freq_ratios,
+        "mean_u2": float(np.mean(u2)),
+        "max_on_boundary": bool(is_boundary[max_k]),
+        "min_on_boundary": bool(is_boundary[min_k]),
+        "min_interior_grad": float(min(grad_mag_interior)),
+        "hot_pole": (float(xs[i_max]), float(ys[j_max])),
+        "cold_pole": (float(xs[i_min]), float(ys[j_min])),
+    }
+
+
+def _trace_viol_streamline(
+    seed: Point,
+    sign: float,
+    xs: np.ndarray,
+    ys: np.ndarray,
+    gx: np.ndarray,
+    gy: np.ndarray,
+    cx: float,
+    cy: float,
+    step_mm: float = 0.60,
+    max_steps: int = 165,
+) -> List[Point]:
+    x0, y0 = float(xs[0]), float(ys[0])
+    hx = float(xs[1] - xs[0])
+    hy = float(ys[1] - ys[0])
+    ny, nx = gx.shape
+
+    def sample_dir(px: float, py: float) -> Tuple[float, float]:
+        fi = (px - x0) / hx
+        fj = (py - y0) / hy
+        i0 = int(math.floor(fi))
+        j0 = int(math.floor(fj))
+        if i0 < 0 or i0 + 1 >= nx or j0 < 0 or j0 + 1 >= ny:
+            return (0.0, 0.0)
+        tx, ty = fi - i0, fj - j0
+        vx = (
+            (1 - tx) * (1 - ty) * gx[j0, i0]
+            + tx * (1 - ty) * gx[j0, i0 + 1]
+            + (1 - tx) * ty * gx[j0 + 1, i0]
+            + tx * ty * gx[j0 + 1, i0 + 1]
+        )
+        vy = (
+            (1 - tx) * (1 - ty) * gy[j0, i0]
+            + tx * (1 - ty) * gy[j0, i0 + 1]
+            + (1 - tx) * ty * gy[j0 + 1, i0]
+            + tx * ty * gy[j0 + 1, i0 + 1]
+        )
+        nrm = math.hypot(vx, vy)
+        if nrm < 1e-8:
+            return (0.0, 0.0)
+        return (sign * vx / nrm, sign * vy / nrm)
+
+    pts = [seed]
+    px, py = seed
+    for _ in range(max_steps):
+        d1x, d1y = sample_dir(px, py)
+        if d1x == 0.0 and d1y == 0.0:
+            break
+        mx, my = px + 0.5 * step_mm * d1x, py + 0.5 * step_mm * d1y
+        d2x, d2y = sample_dir(mx, my)
+        if d2x == 0.0 and d2y == 0.0:
+            break
+        nx_p, ny_p = px + step_mm * d2x, py + step_mm * d2y
+        if float(viol_resonator_phi(np.array(nx_p), np.array(ny_p), cx=cx, cy=cy)) > 0.975:
+            pts.append((nx_p, ny_p))
+            break
+        pts.append((nx_p, ny_p))
+        px, py = nx_p, ny_p
+    return pts
+
+
+def acoustic_resonator_geometry(cx: float = 85.0, cy: float = 98.5) -> Dict:
+    """
+    Constructs `Tabula VII · Cista Resonantiae Chladniana`:
+      1. Central double-purfled non-convex luthiery viol soundboard (`pi_1 = 0`, zero f-holes)
+         engraving smooth pressure iso-bars `u_2 = c`, rubricated Chladni nodal waist curve
+         `u_2 = 0` with quartz-sand stipple ticks, 11 non-singular interior gradient streamlines
+         `grad u_2 != 0`, upper bowing hot-spot `P_+` + horsehair bow tangent, and cold pole `P_-`.
+      2. Four corner spandrel medallions contrasting higher Chladni overtones (`u_4`, `u_5`)
+         against the two sharp counterexample regimes: doubly-connected twin-hole plates
+         (Burdzy-Werner 1999, `pi_1 != 0`) and 3D starlike chambers (Atar-Burdzy 2026, `r=0` max).
+      3. Graduated Helmholtz monochord eigenfrequency ratio bar (`sqrt(mu_k / mu_2)`).
+    """
+    sol = solve_viol_acoustic_resonator(cx=cx, cy=cy, h_mm=0.90)
+    xs, ys, inside, f_u2 = sol["xs"], sol["ys"], sol["inside"], sol["field_u2"]
+    valid_cells = inside[:-1, :-1] & inside[:-1, 1:] & inside[1:, 1:] & inside[1:, :-1]
+    safe_u2 = np.where(inside, f_u2, 0.0)
+
+    ink_strokes: List[Tuple[List[Point], float]] = []
+    red_strokes: List[Tuple[List[Point], float]] = []
+    sand_dots: List[Point] = []
+
+    # 1. Double-purfled luthiery viol soundboard rim (`Phi = 1.0` outer, `Phi = 0.925` purfling inlay)
+    all_cells = np.ones((len(ys) - 1, len(xs) - 1), dtype=bool)
+    for b_out in _marching_squares_stitched(sol["phi"], xs, ys, all_cells, level=1.0, tol=1e-3, smooth_passes=2):
+        ink_strokes.append((b_out, 0.28))
+    for b_purf in _marching_squares_stitched(sol["phi"], xs, ys, all_cells, level=0.925, tol=1e-3, smooth_passes=2):
+        ink_strokes.append((b_purf, 0.12))
+
+    # 2. Smooth non-crossing interior level curves `u_2 = c`
+    for lv in (-0.86, -0.72, -0.58, -0.44, -0.30, -0.16, 0.16, 0.30, 0.44, 0.58, 0.72, 0.86):
+        for ch in _marching_squares_stitched(safe_u2, xs, ys, valid_cells, level=lv, tol=1e-3, smooth_passes=1):
+            ink_strokes.append((ch, 0.13))
+
+    # 3. Rubricated Chladni Nodal Sand-Line `u_2(x, y) = 0` + quartz-sand grain ticks along nodal band
+    nodal_chains = _marching_squares_stitched(safe_u2, xs, ys, valid_cells, level=0.0, tol=1e-3, smooth_passes=1)
+    for n_ch in nodal_chains:
+        red_strokes.append((n_ch, 0.34))
+        # Deterministic quartz-sand stipple flecks resting beside the quiet nodal locus
+        for idx_p, (px, py) in enumerate(n_ch[2:-2:2]):
+            off_a = 1.15 * math.sin(idx_p * 2.39996)
+            off_b = 1.65 * math.cos(idx_p * 1.61803)
+            for dy_s in (off_a, -off_b):
+                sx_g, sy_g = px + 0.45 * math.cos(idx_p), py + dy_s
+                if float(viol_resonator_phi(np.array(sx_g), np.array(sy_g), cx=cx, cy=cy)) < 0.89:
+                    sand_dots.append((sx_g, sy_g))
+                    ink_strokes.append(([(sx_g - 0.22, sy_g), (sx_g + 0.22, sy_g)], 0.14))
+
+    # 4. 11 Non-singular orthogonal acoustic velocity/gradient streamlines `grad u_2`
+    if nodal_chains:
+        main_nodal = max(nodal_chains, key=len)
+        seed_idxs = np.linspace(3, max(4, len(main_nodal) - 4), 11, dtype=int)
+        for idx in seed_idxs:
+            seed = main_nodal[int(idx)]
+            up_pts = _trace_viol_streamline(seed, +1.0, xs, ys, sol["gx"], sol["gy"], cx=cx, cy=cy)
+            dn_pts = _trace_viol_streamline(seed, -1.0, xs, ys, sol["gx"], sol["gy"], cx=cx, cy=cy)
+            full_line = list(reversed(dn_pts[1:])) + up_pts
+            if len(full_line) >= 4:
+                ink_strokes.append((_smooth_open_or_closed(full_line, passes=1), 0.11))
+
+    # 5. Boundary Bowing Hot-Spot (`P_+` with Chladni horsehair bow tangent) & Cold Pole (`P_-`)
+    hx, hy = sol["hot_pole"]
+    lx_p, ly_p = sol["cold_pole"]
+    for rr in (1.3, 2.5):
+        red_strokes.append(([(hx + rr * math.cos(math.tau * i / 36), hy + rr * math.sin(math.tau * i / 36)) for i in range(37)], 0.22))
+        ink_strokes.append(([(lx_p + rr * math.cos(math.tau * i / 36), ly_p + rr * math.sin(math.tau * i / 36)) for i in range(37)], 0.18))
+    # Chladni horsehair bow drawn tangentially across the upper boundary antinode `P_+`
+    red_strokes.append(([(hx - 14.0, hy - 3.6), (hx + 14.0, hy + 2.2)], 0.26))
+    ink_strokes.append(([(hx - 13.6, hy - 4.7), (hx + 14.4, hy + 1.1)], 0.12))
+
+    # Helper to draw a miniature scaled viol contour + nodal set inside a corner medallion
+    def add_mini_viol_mode(mcx: float, mcy: float, mr: float, mode_grid: np.ndarray) -> None:
+        ink_strokes.append(([(mcx + mr * math.cos(math.tau * i / 84), mcy + mr * math.sin(math.tau * i / 84)) for i in range(85)], 0.18))
+        sc_m = 0.195
+        for b_c in _marching_squares_stitched(sol["phi"], xs, ys, all_cells, level=1.0, tol=1e-3, smooth_passes=1):
+            pts_m = [(mcx + (p[0] - cx) * sc_m, mcy + (p[1] - cy) * sc_m) for p in b_c]
+            ink_strokes.append((pts_m, 0.16))
+        safe_m = np.where(inside, mode_grid, 0.0)
+        for n_c in _marching_squares_stitched(safe_m, xs, ys, valid_cells, level=0.0, tol=1e-3, smooth_passes=1):
+            pts_m = [(mcx + (p[0] - cx) * sc_m, mcy + (p[1] - cy) * sc_m) for p in n_c]
+            red_strokes.append((pts_m, 0.21))
+
+    # 6. Four Corner Luthiery & Topological Foil Medallions (`r = 10.8 mm`)
+    mr = 10.8
+    # Upper-Left `(31, 46)`: Higher Viol Chladni Overtone `u_4` (4-quadrant saddle nodal cross)
+    add_mini_viol_mode(31.0, 46.0, mr, sol["field_u4"])
+
+    # Lower-Left `(31, 141)`: Higher Viol Chladni Overtone `u_5` (luthiery ring-and-bout mode)
+    add_mini_viol_mode(31.0, 141.0, mr, sol["field_u5"])
+
+    # Upper-Right `(139, 46)`: Doubly Connected Two-Hole Foil (Burdzy-Werner 1999, `pi_1 != 0`)
+    rcx, rcy = 139.0, 46.0
+    ink_strokes.append(([(rcx + mr * math.cos(math.tau * i / 84), rcy + mr * math.sin(math.tau * i / 84)) for i in range(85)], 0.18))
+    sc_m = 0.195
+    for b_c in _marching_squares_stitched(sol["phi"], xs, ys, all_cells, level=1.0, tol=1e-3, smooth_passes=1):
+        ink_strokes.append(([(rcx + (p[0] - cx) * sc_m, rcy + (p[1] - cy) * sc_m) for p in b_c], 0.16))
+    # Twin luthiery sound-holes (`pi_1 != 0` obstacles) + trapped interior hot-spot ring!
+    for sgn in (-1.0, 1.0):
+        hx_f = rcx + sgn * 2.8
+        ink_strokes.append(([(hx_f + 1.0 * math.cos(math.tau * i / 32), rcy + 2.6 * math.sin(math.tau * i / 32)) for i in range(33)], 0.16))
+    for rr_t, w_t in ((1.1, 0.24), (2.0, 0.14)):
+        red_strokes.append(([(rcx + rr_t * math.cos(math.tau * i / 36), rcy + rr_t * math.sin(math.tau * i / 36)) for i in range(37)], w_t))
+
+    # Lower-Right `(139, 141)`: 3D Starlike Spiked Chamber Foil (Atar-Burdzy Oct 2026, `r=0` interior max!)
+    scx, scy = 139.0, 141.0
+    ink_strokes.append(([(scx + mr * math.cos(math.tau * i / 84), scy + mr * math.sin(math.tau * i / 84)) for i in range(85)], 0.18))
+    star_pts: List[Point] = []
+    n_spikes = 12
+    for i in range(n_spikes * 2 + 1):
+        ang = math.tau * i / (n_spikes * 2)
+        rad_s = 8.8 if (i % 2 == 0) else 4.3
+        star_pts.append((scx + rad_s * math.cos(ang), scy + rad_s * math.sin(ang)))
+    ink_strokes.append((star_pts, 0.15))
+    for rr_s, is_r in ((1.2, True), (2.4, True), (3.6, False)):
+        ring_s = [(scx + rr_s * math.cos(math.tau * i / 36), scy + rr_s * math.sin(math.tau * i / 36)) for i in range(37)]
+        (red_strokes if is_r else ink_strokes).append((ring_s, 0.22 if rr_s < 1.5 else 0.13))
+
+    # 7. Helmholtz Monochord Eigenfrequency Spectrum Rail (`y = 163.5 mm`, `x in [32, 138]`)
+    bar_x0, bar_x1, bar_y = 32.0, 138.0, 163.5
+    ink_strokes.append(([(bar_x0, bar_y), (bar_x1, bar_y)], 0.20))
+    ink_strokes.append(([(bar_x0, bar_y - 1.3), (bar_x1, bar_y - 1.3)], 0.10))
+    ratios = sol["freq_ratios"]  # [1.000, ~2.000, ~2.065, ~2.468, ~2.847, ~3.263]
+    r_min, r_max = 1.0, max(3.4, ratios[-1] + 0.1)
+    ratio_ticks: List[Tuple[float, float, str, bool]] = []
+    for idx_r, r_val in enumerate(ratios):
+        tx = bar_x0 + ((r_val - r_min) / (r_max - r_min)) * (bar_x1 - bar_x0)
+        is_oct = idx_r in (0, 1)  # Highlight fundamental 1.00x and natural 2.00x octave lock!
+        (red_strokes if is_oct else ink_strokes).append(([(tx, bar_y - 2.6), (tx, bar_y + 2.2)], 0.24 if is_oct else 0.15))
+        # Offset closely spaced modes 2 & 3 (`2.00x` vs `2.07x`) slightly in label x/y so text never collides!
+        lbl_x = tx - 3.2 if idx_r == 1 else (tx + 3.4 if idx_r == 2 else tx)
+        ratio_ticks.append((lbl_x, bar_y + 5.2, f"{r_val:.2f}x", is_oct))
+
+    labels = [
+        (31.0, 60.2, "U4 OVER-NODE", False, 1.85),
+        (139.0, 60.2, "2 HOLES: TRAP", True, 1.85),
+        (31.0, 155.2, "U5 RING-MODE", False, 1.85),
+        (139.0, 155.2, "D=3 STAR: R=0", True, 1.85),
+        (cx, hy - 5.2, "BOW HOT-SPOT P+", True, 1.85),
+        (cx, ly_p + 5.8, "RIM COLD-POLE P-", False, 1.85),
+    ]
+    for lx, ly, txt, is_r in ratio_ticks:
+        labels.append((lx, ly, txt, is_r, 1.65))
+
+    return {
+        "solver": sol,
+        "ink_strokes": ink_strokes,
+        "red_strokes": red_strokes,
+        "sand_dots": sand_dots,
+        "labels": labels,
+    }
+
+
+def chladni_vellum_field(nx: np.ndarray, ny: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    96-dpi vellum wash for Tabula VII: luthiery spruce-grain Chladni standing-wave
+    interference (`(2,3)` + `(3,5)` nodal superpositions) framed by the viol dipole.
+    """
+    xx = (nx - 0.50) * 2.1
+    yy = (ny - 0.46) * 2.5
+    env = np.exp(-0.72 * (xx * xx + 0.78 * yy * yy))
+
+    chladni_23 = np.cos(2.0 * math.pi * xx) * np.cos(3.0 * math.pi * yy) - np.cos(3.0 * math.pi * xx) * np.cos(2.0 * math.pi * yy)
+    chladni_14 = np.cos(1.0 * math.pi * xx) * np.cos(4.0 * math.pi * yy) + 0.5 * np.cos(3.0 * math.pi * yy)
+
+    warm = np.clip(env * np.clip(-yy * 0.9 + 0.35, 0.0, 1.0) * (0.55 + 0.45 * np.abs(chladni_23)), 0.0, 1.0).astype(np.float32)
+    cool = np.clip(env * np.clip(+yy * 0.9 + 0.35, 0.0, 1.0) * (0.50 + 0.50 * np.exp(-3.5 * (chladni_14 ** 2))), 0.0, 1.0).astype(np.float32)
+    return warm, cool
+
+
+# ---------------------------------------------------------------------------
+# 7. Book IV Single-Fold Diophantine & Gödel Diagonal (`Tabula VIII`)
+# ---------------------------------------------------------------------------
+
+PRIMES_16: Tuple[int, ...] = (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53)
+
+
+def pell_matiyasevich_solutions(a: int, count: int = 7) -> List[Tuple[int, int]]:
+    """
+    Generates exact integer solutions `(x_n, y_n)` to Matiyasevich's Pell equation
+    `x^2 - (a^2 - 1) * y^2 = 1` for `a >= 2` via the linear recurrence:
+      x_0 = 1, y_0 = 0;  x_1 = a, y_1 = 1;  x_{n+1} = 2*a*x_n - x_{n-1}.
+    Every solution provides exponential growth inside polynomial Diophantine equations.
+    """
+    if a < 2:
+        raise ValueError("Pell parameter `a` must be >= 2.")
+    sols: List[Tuple[int, int]] = [(1, 0)]
+    if count == 1:
+        return sols
+    sols.append((a, 1))
+    for _ in range(2, count):
+        x_prev2, y_prev2 = sols[-2]
+        x_prev1, y_prev1 = sols[-1]
+        sols.append((2 * a * x_prev1 - x_prev2, 2 * a * y_prev1 - y_prev2))
+    return sols
+
+
+def verify_godel_singlefold_invariants() -> Dict:
+    """
+    Verifies the four exact mathematical invariants engraved on `Tabula VIII`:
+      1. Exact Pell identity `x_n^2 - (a^2 - 1) y_n^2 == 1` across `a in 2..6, n in 0..6`.
+      2. Single-fold integer polynomial witness uniqueness on Cantor's bijection
+         `2*z = (x + y)*(x + y + 1) + 2*x` (`0..35` -> each `z` has *at most one* `(x, y)` in `N^2`).
+      3. Cantor-Gödel 8x8 anti-diagonal construction `Delta_k = 1 - M[k, k]` escaping all 8 rows.
+      4. Automorphism rigidity (`|Aut(P, <=)| == 1`) of the 7-element asymmetric poset gadget
+         modeling `openai/math` Family 241 (`DegreeRigidity.lean`).
+    """
+    # 1. Pell identity
+    for a in range(2, 7):
+        d = a * a - 1
+        for xn, yn in pell_matiyasevich_solutions(a, count=7):
+            assert xn * xn - d * yn * yn == 1, f"Pell failure for a={a}: ({xn}, {yn})"
+
+    # 2. Single-fold witness uniqueness on `P(z, x, y) = (x + y)*(x + y + 1) + 2*x - 2*z == 0`
+    for z in range(36):
+        witnesses = [
+            (x, y)
+            for x in range(10)
+            for y in range(10)
+            if (x + y) * (x + y + 1) + 2 * x - 2 * z == 0
+        ]
+        assert len(witnesses) == 1, f"Expected unique witness for z={z}, found {witnesses}"
+
+    # 3. 8x8 Cantor-Gödel predicate matrix & anti-diagonal escape
+    mat = np.zeros((8, 8), dtype=np.int32)
+    for r in range(8):
+        p = PRIMES_16[r]
+        for c in range(8):
+            mat[r, c] = ((p * (c + 3) + (r ^ c)) >> 1) & 1
+    anti_diag = tuple(1 - int(mat[k, k]) for k in range(8))
+    for r in range(8):
+        row_t = tuple(int(mat[r, c]) for c in range(8))
+        assert anti_diag[r] != row_t[r] and anti_diag != row_t
+
+    # 4. Finite asymmetric poset rigidity (`|Aut(P, <=)| == 1`, zero non-identity automorphisms!)
+    # 7-node Hasse covering edges: 0=bottom, 6=top, asymmetric chains of lengths 1, 2, 3 with cross-join:
+    # 0 < 1 < 6 (len 2), 0 < 2 < 3 < 6 (len 3), 0 < 4 < 5 < 6 with 2 < 5 (breaks symmetry between chains!)
+    import itertools
+    n_pos = 7
+    covers = {(0, 1), (1, 6), (0, 2), (2, 3), (3, 6), (0, 4), (4, 5), (5, 6), (2, 5)}
+    # Transitive + reflexive closure
+    le = {(i, i) for i in range(n_pos)} | covers
+    changed = True
+    while changed:
+        changed = False
+        for a_i in range(n_pos):
+            for b_i in range(n_pos):
+                if (a_i, b_i) in le:
+                    for c_i in range(n_pos):
+                        if (b_i, c_i) in le and (a_i, c_i) not in le:
+                            le.add((a_i, c_i))
+                            changed = True
+
+    automorphisms = []
+    for perm in itertools.permutations(range(n_pos)):
+        ok = True
+        for u_i in range(n_pos):
+            for v_i in range(n_pos):
+                if ((u_i, v_i) in le) != ((perm[u_i], perm[v_i]) in le):
+                    ok = False
+                    break
+            if not ok:
+                break
+        if ok:
+            automorphisms.append(perm)
+    assert len(automorphisms) == 1 and automorphisms[0] == tuple(range(n_pos)), (
+        f"Expected rigid poset Aut={{id}}, got {automorphisms}"
+    )
+
+    return {
+        "matrix": mat,
+        "anti_diagonal": anti_diag,
+        "rigid_poset_covers": sorted(covers),
+        "automorphism_count": len(automorphisms),
+    }
+
+
+def godel_diophantine_geometry(cx: float = 85.0, cy: float = 96.5) -> Dict:
+    """
+    Constructs `Tabula VIII · Speculum Diophantinum & Diagonalis Gödeliana`:
+      1. Central Gödel Prime Astrolabe (`r_outer = 45.5 mm`, `r_inner = 41.5 mm`) marked with
+         the first 16 primes `2, 3, ..., 53` and four sheaves of Pell-Matiyasevich hyperbolas
+         `u^2 - d * v^2 = +-c` surrounding the central 8x8 Cantor-Gödel Diagonal Chamber.
+      2. Central 8x8 Predicate Matrix (`40 x 40 mm`) with double-ring witness seals, quiet
+         non-witness crosshairs, rubricated diagonal spine `(k, k)`, and the detached 8-cell
+         Anti-Diagonal Witness Register `Delta_k = 1 - M[k, k]` suspended at `y = 148.5 mm`.
+      3. Four Corner Logic & Computability Foil Medallions (`r = 10.8 mm`):
+           - Upper-Left  (`MULTI-FOLD >=2`): Multiple witnesses on one vertical fiber (Babel redundancy)
+           - Upper-Right (`SINGLE-FOLD <=1`): Family 242 unique witness fiber (`0` or `1` point per `x`)
+           - Lower-Left  (`QUINE FIXED PT`): Diagonal self-substitution figure-eight meeting at `G`
+           - Lower-Right (`AUT(D) = {ID}`): Family 241 rigid Turing-degree poset with zero symmetry.
+    """
+    inv = verify_godel_singlefold_invariants()
+    mat = inv["matrix"]
+    anti_diag = inv["anti_diagonal"]
+
+    ink_strokes: List[Tuple[List[Point], float]] = []
+    red_strokes: List[Tuple[List[Point], float]] = []
+
+    r_out = 45.0
+    r_in = 41.2
+    for rr, w_mm in ((r_out, 0.24), (r_in, 0.14)):
+        ink_strokes.append(([(cx + rr * math.cos(math.tau * i / 160), cy + rr * math.sin(math.tau * i / 160)) for i in range(161)], w_mm))
+
+    # 16 Prime Gödel-Numbering radial divisions around the astrolabe annulus
+    prime_labels: List[Tuple[float, float, str, bool, float]] = []
+    for idx_p, p_val in enumerate(PRIMES_16):
+        ang = -0.5 * math.pi + math.tau * idx_p / 16.0
+        ca, sa = math.cos(ang), math.sin(ang)
+        is_card = (idx_p % 4 == 0) or (p_val == 19)  # Highlight cardinal primes & shift prime 19!
+        (red_strokes if p_val == 19 else ink_strokes).append((
+            [(cx + r_in * ca, cy + r_in * sa), (cx + r_out * ca, cy + r_out * sa)],
+            0.24 if is_card else 0.13,
+        ))
+        # Subtle sub-ticks inside the annulus encoding `p_val mod 6`
+        for sub_i in range(1, 4):
+            ang_s = ang + (math.tau / 64.0) * sub_i
+            ink_strokes.append((
+                [(cx + (r_out - 1.5) * math.cos(ang_s), cy + (r_out - 1.5) * math.sin(ang_s)),
+                 (cx + r_out * math.cos(ang_s), cy + r_out * math.sin(ang_s))],
+                0.09,
+            ))
+        if idx_p % 2 == 0 or p_val == 19:
+            rl = r_out + 3.1
+            prime_labels.append((cx + rl * ca, cy + rl * sa + 0.6, f"p={p_val}", p_val == 19, 1.50))
+
+    # Central 8x8 Cantor-Gödel Matrix Chamber (`half = 19.2 mm` -> `38.4 x 38.4 mm`, fits inside `r_in = 41.2 mm` with Pell lunettes!)
+    half_sq = 19.2
+    x0_m, y0_m = cx - half_sq, cy - half_sq
+    cell = (2.0 * half_sq) / 8.0  # 4.8 mm per cell
+
+    # Pell-Matiyasevich hyperbola sheaves in the 4 circular lunettes between the 38.4mm square and r_in=41.2mm circle!
+    ts = np.linspace(-1.35, 1.35, 90)
+    for c_scale in (22.5, 26.0, 29.8, 33.8, 37.6):
+        # 4 branches: top, bottom, left, right hyperbolas `u = +- c cosh(t), v = c sinh(t)`
+        for orient in ("top", "bot", "left", "right"):
+            pts_h: List[Point] = []
+            for tv in ts:
+                u_h = c_scale * math.cosh(tv)
+                v_h = c_scale * 0.62 * math.sinh(tv)
+                if orient == "top":
+                    px, py = cx + v_h, cy - u_h
+                elif orient == "bot":
+                    px, py = cx + v_h, cy + u_h
+                elif orient == "left":
+                    px, py = cx - u_h, cy + v_h
+                else:
+                    px, py = cx + u_h, cy + v_h
+                # Keep points strictly inside `r_in - 0.6` and outside the central 8x8 square!
+                in_disk = math.hypot(px - cx, py - cy) <= (r_in - 0.7)
+                out_box = (abs(px - cx) > half_sq + 0.6) or (abs(py - cy) > half_sq + 0.6)
+                if in_disk and out_box:
+                    pts_h.append((px, py))
+                else:
+                    if len(pts_h) >= 3:
+                        ink_strokes.append((pts_h, 0.11))
+                    pts_h = []
+            if len(pts_h) >= 3:
+                ink_strokes.append((pts_h, 0.11))
+
+    # Outer & grid lines of the 8x8 Cantor-Gödel Matrix
+    ink_strokes.append(([(x0_m, y0_m), (x0_m + 2 * half_sq, y0_m), (x0_m + 2 * half_sq, y0_m + 2 * half_sq), (x0_m, y0_m + 2 * half_sq), (x0_m, y0_m)], 0.24))
+    for g_i in range(1, 8):
+        gx_l = x0_m + g_i * cell
+        gy_l = y0_m + g_i * cell
+        ink_strokes.append(([(gx_l, y0_m), (gx_l, y0_m + 2 * half_sq)], 0.10))
+        ink_strokes.append(([(x0_m, gy_l), (x0_m + 2 * half_sq, gy_l)], 0.10))
+
+    # Rubricated Cantor Diagonal Spine `(k, k)`
+    red_strokes.append(([(x0_m, y0_m), (x0_m + 2 * half_sq, y0_m + 2 * half_sq)], 0.28))
+
+    for r_i in range(8):
+        for c_i in range(8):
+            ccx = x0_m + (c_i + 0.5) * cell
+            ccy = y0_m + (r_i + 0.5) * cell
+            on_diag = (r_i == c_i)
+            val = int(mat[r_i, c_i])
+            if val == 1:
+                rr_c = 1.25 if on_diag else 1.05
+                ring_c = [(ccx + rr_c * math.cos(math.tau * j / 28), ccy + rr_c * math.sin(math.tau * j / 28)) for j in range(29)]
+                (red_strokes if on_diag else ink_strokes).append((ring_c, 0.22 if on_diag else 0.14))
+                if on_diag:
+                    red_strokes.append(([(ccx - 0.45, ccy), (ccx + 0.45, ccy)], 0.20))
+            else:
+                d_s = 0.72
+                (red_strokes if on_diag else ink_strokes).append(([(ccx - d_s, ccy), (ccx + d_s, ccy)], 0.18 if on_diag else 0.10))
+                (red_strokes if on_diag else ink_strokes).append(([(ccx, ccy - d_s), (ccx, ccy + d_s)], 0.18 if on_diag else 0.10))
+
+    # Detached 8-Cell Inverted Anti-Diagonal Witness Row `Delta_k = 1 - M[k, k]` at `y = 152.0 mm`
+    ry0 = 150.5
+    ink_strokes.append(([(x0_m, ry0), (x0_m + 2 * half_sq, ry0), (x0_m + 2 * half_sq, ry0 + cell), (x0_m, ry0 + cell), (x0_m, ry0)], 0.20))
+    for k_i in range(8):
+        if k_i > 0:
+            ink_strokes.append(([(x0_m + k_i * cell, ry0), (x0_m + k_i * cell, ry0 + cell)], 0.11))
+        ccx = x0_m + (k_i + 0.5) * cell
+        ccy = ry0 + 0.5 * cell
+        # Dashed/faint projection tick above the register linking to column `k_i`
+        red_strokes.append(([(ccx, ry0 - 2.2), (ccx, ry0 - 0.6)], 0.14))
+        if anti_diag[k_i] == 1:
+            ring_d = [(ccx + 1.25 * math.cos(math.tau * j / 28), ccy + 1.25 * math.sin(math.tau * j / 28)) for j in range(29)]
+            red_strokes.append((ring_d, 0.24))
+        else:
+            red_strokes.append(([(ccx - 0.75, ccy - 0.75), (ccx + 0.75, ccy + 0.75)], 0.18))
+            red_strokes.append(([(ccx - 0.75, ccy + 0.75), (ccx + 0.75, ccy - 0.75)], 0.18))
+
+    # Four Corner Logic & Computability Foil Medallions (`r = 10.6 mm`)
+    mr = 10.6
+    # 1. Upper-Left `(30.5, 45.5)`: Multi-Fold MRDP Fiber (`>= 2` witnesses on single x-fiber)
+    ulx, uly = 30.5, 45.5
+    ink_strokes.append(([(ulx + mr * math.cos(math.tau * i / 84), uly + mr * math.sin(math.tau * i / 84)) for i in range(85)], 0.18))
+    for fx_off in (-5.4, -1.8, 1.8, 5.4):
+        ink_strokes.append(([(ulx + fx_off, uly - 7.4), (ulx + fx_off, uly + 7.4)], 0.10))
+    # Smooth curve folding back across `fx_off = -1.8` and `1.8` to hit 3 witnesses on one vertical fiber!
+    s_curve = [(ulx + 5.8 * math.sin(1.9 * s_t), uly + 6.8 * (s_t / 1.4)) for s_t in np.linspace(-1.4, 1.4, 60)]
+    ink_strokes.append((s_curve, 0.15))
+    for wy in (-4.8, 0.0, 4.8):
+        red_strokes.append(([(ulx + 1.8 + 0.95 * math.cos(math.tau * j / 20), uly + wy + 0.95 * math.sin(math.tau * j / 20)) for j in range(21)], 0.22))
+
+    # 2. Upper-Right `(139.5, 45.5)`: Single-Fold Family 242 Fiber (`<= 1` unique witness per `x`!)
+    urx, ury = 139.5, 45.5
+    ink_strokes.append(([(urx + mr * math.cos(math.tau * i / 84), ury + mr * math.sin(math.tau * i / 84)) for i in range(85)], 0.18))
+    witness_heights = {0: -4.2, 2: 3.6, 3: -1.2, 5: 5.0}  # Fibers 1 and 4 are non-members (0 witnesses!)
+    for idx_f, fx_off in enumerate((-6.0, -3.6, -1.2, 1.2, 3.6, 6.0)):
+        ink_strokes.append(([(urx + fx_off, ury - 7.4), (urx + fx_off, ury + 7.4)], 0.10))
+        if idx_f in witness_heights:
+            wy = witness_heights[idx_f]
+            red_strokes.append(([(urx + fx_off + 1.05 * math.cos(math.tau * j / 22), ury + wy + 1.05 * math.sin(math.tau * j / 22)) for j in range(23)], 0.24))
+
+    # 3. Lower-Left `(30.5, 141.5)`: Quine-Gödel Self-Referential Fixed-Point Lemniscate `G <-> ~Prov(#G)`
+    llx, lly = 30.5, 141.5
+    ink_strokes.append(([(llx + mr * math.cos(math.tau * i / 84), lly + mr * math.sin(math.tau * i / 84)) for i in range(85)], 0.18))
+    lem_a: List[Point] = []
+    lem_b: List[Point] = []
+    for ph in np.linspace(0.0, math.tau, 100):
+        denom = 1.0 + math.sin(ph) ** 2
+        lx_v = 7.8 * math.cos(ph) / denom
+        ly_v = 7.8 * math.sin(ph) * math.cos(ph) / denom
+        lem_a.append((llx + lx_v * 0.866 - ly_v * 0.5, lly + lx_v * 0.5 + ly_v * 0.866))
+        lem_b.append((llx + lx_v * 0.866 + ly_v * 0.5, lly - lx_v * 0.5 + ly_v * 0.866))
+    ink_strokes.append((lem_a, 0.15))
+    ink_strokes.append((lem_b, 0.15))
+    red_strokes.append(([(llx + 1.45 * math.cos(math.tau * j / 24), lly + 1.45 * math.sin(math.tau * j / 24)) for j in range(25)], 0.26))
+
+    # 4. Lower-Right `(139.5, 141.5)`: Family 241 Rigid Poset of Turing Degrees (`Aut(D) = {id}`)
+    lrx, lry = 139.5, 141.5
+    ink_strokes.append(([(lrx + mr * math.cos(math.tau * i / 84), lry + mr * math.sin(math.tau * i / 84)) for i in range(85)], 0.18))
+    poset_xy = {
+        0: (lrx, lry + 7.2),          # 0 (computable base)
+        1: (lrx - 5.8, lry + 0.5),    # 2-step left branch
+        2: (lrx - 0.6, lry + 2.8),    # 3-step center-left lower
+        3: (lrx - 1.2, lry - 2.6),    # 3-step center-left upper
+        4: (lrx + 5.4, lry + 3.2),    # right lower
+        5: (lrx + 5.2, lry - 2.4),    # right upper (receives asymmetric cross-edge 2->5!)
+        6: (lrx, lry - 7.2),          # 0' / top join
+    }
+    for u_i, v_i in inv["rigid_poset_covers"]:
+        is_asym = (u_i, v_i) == (2, 5)
+        (red_strokes if is_asym else ink_strokes).append(([poset_xy[u_i], poset_xy[v_i]], 0.21 if is_asym else 0.13))
+    for n_id, (px_n, py_n) in poset_xy.items():
+        is_end = n_id in (0, 5, 6)
+        ring_n = [(px_n + 0.85 * math.cos(math.tau * j / 20), py_n + 0.85 * math.sin(math.tau * j / 20)) for j in range(21)]
+        (red_strokes if is_end else ink_strokes).append((ring_n, 0.20 if is_end else 0.14))
+
+    labels = [
+        (ulx, uly + 14.2, "MULTI-FOLD >=2", False, 1.80),
+        (urx, ury + 14.2, "SINGLE-FOLD <=1", True, 1.80),
+        (llx, lly + 14.2, "QUINE FIXED-PT", False, 1.80),
+        (lrx, lry + 14.2, "AUT(D) = {ID}", True, 1.80),
+        (cx, ry0 + cell + 4.2, "ANTI-DIAGONAL WITNESS DELTA = 1 - M[K,K]", True, 1.70),
+    ]
+    labels.extend(prime_labels)
+
+    return {
+        "invariants": inv,
+        "ink_strokes": ink_strokes,
+        "red_strokes": red_strokes,
+        "labels": labels,
+    }
+
+
+def godel_vellum_field(nx: np.ndarray, ny: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    96-dpi vellum wash for Tabula VIII: Pell-hyperbola saddle harmonics (`x^2 - y^2`)
+    crossed with a subtle Cantor-diagonal warm highlight band and prime radial rings.
+    """
+    xx = (nx - 0.50) * 2.2
+    yy = (ny - 0.45) * 2.6
+    env = np.exp(-0.68 * (xx * xx + 0.78 * yy * yy))
+
+    pell_hyp = np.cos(4.5 * (xx * xx - yy * yy))
+    diag_band = np.exp(-5.5 * ((xx - 0.78 * yy) ** 2))
+    prime_rings = 0.5 + 0.5 * np.cos(11.0 * np.hypot(xx, yy))
+
+    warm = np.clip(env * (0.55 * diag_band + 0.45 * (0.5 + 0.5 * pell_hyp)), 0.0, 1.0).astype(np.float32)
+    cool = np.clip(env * (1.0 - 0.65 * diag_band) * prime_rings, 0.0, 1.0).astype(np.float32)
+    return warm, cool

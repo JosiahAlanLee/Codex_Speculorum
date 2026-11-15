@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Deterministic 96-dpi vellum finishing (`light` and `full` profiles) + Volume II
-mathematical shader washes (`hopf`, `mobius`, `hotspots`, `canon`, `aperiodic`).
+mathematical shader washes (`hopf`, `mobius`, `hotspots`, `canon`, `aperiodic`, `chladni`, `godel`).
 Generates warm vellum fields with feathered text/cipher/plate protection zones
 and merges each vellum sheet *underneath* the pure vector foreground page so
 strokes, glyphs, lifted-pen paths, and ground-ordered Nota Clausa marks remain
@@ -25,6 +25,8 @@ from common.illum.furniture import PAPER, PH, PW
 from common.illustrations.shader_plates import (
     aperiodic_vellum_field,
     canon_vellum_field,
+    chladni_vellum_field,
+    godel_vellum_field,
     hopf_vellum_field,
     hotspots_vellum_field,
     mobius_vellum_field,
@@ -40,7 +42,7 @@ PIGMENT = (104, 72, 39)
 RUBRIC_WASH = (152, 68, 46)
 SLATE_WASH = (70, 84, 92)
 PROFILES = ("light", "full")
-WASH_MODES = ("none", "hopf", "mobius", "hotspots", "canon", "aperiodic")
+WASH_MODES = ("none", "hopf", "mobius", "hotspots", "canon", "aperiodic", "chladni", "godel")
 
 
 def seed_for(base_seed: int, page_index: int) -> int:
@@ -107,8 +109,12 @@ def make_texture(
             w_raw, c_raw = hotspots_vellum_field(nx, ny)
         elif wash_mode == "canon":
             w_raw, c_raw = canon_vellum_field(nx, ny)
-        else:
+        elif wash_mode == "aperiodic":
             w_raw, c_raw = aperiodic_vellum_field(nx, ny)
+        elif wash_mode == "chladni":
+            w_raw, c_raw = chladni_vellum_field(nx, ny)
+        else:
+            w_raw, c_raw = godel_vellum_field(nx, ny)
 
         art_band = np.clip((ny - 0.13) / 0.06, 0.0, 1.0) * np.clip((0.79 - ny) / 0.06, 0.0, 1.0)
         warm_sh = gain * w_raw * art_band

@@ -20,10 +20,10 @@
     "common/illustrations/shader_plates.py": {
       "source": "Argon HydraPy Demo Suites + openai/math (Apache-2.0)",
       "hand": "Clean-room SVG plotter & 96-dpi vellum port",
-      "tree_sha256": "bfea5845427ac740f5cc32d06515a9a090fd22fee32f2cd4fa892507b980fa30",
-      "commit": "vol2-tabulae-port-b2",
+      "tree_sha256": "6f33d53f34ae9f2c8e1c6653d8bb9293285e97af9585f12441db9df4a3624acd",
+      "commit": "vol2-tabulae-port-b4",
       "visibility": "public",
-      "notes": "Ports 4D Hopf fibration, Conformal Möbius & 7/16 4D Hyper-Vault, Strict Hot-Spots Neumann Eigenmodes (openai/math Family 369), Koopman-Bhairav Crab Canon, and hidden-line-eliminated 3D Aperiodic Vault (openai/math Family 155)."
+      "notes": "Ports 4D Hopf fibration, Conformal Möbius & 7/16 4D Hyper-Vault, Strict Hot-Spots Neumann Eigenmodes (Family 369), Koopman-Bhairav Crab Canon, 3D Aperiodic Vault (Family 155), Viol Acoustic Resonator (Tabula VII), and Single-Fold Diophantine & Turing Rigidity Astrolabe (Families 242 & 241, Tabula VIII)."
     },
     "books/01_liber_primus/canon/play_koopman_canon.py": {
       "source": "nrro_cleanroom_av_engine.py + build_bhairav_entropy_scene.py",
@@ -47,11 +47,41 @@
       "commit": "cbd7012714197c638931b500922936727efdf64f",
       "visibility": "public",
       "tree_sha256": "b88fa694a01d66c33e5d42f233462dab9ded894fd413d823e1bf3d57795b9e11",
-      "notes": "IM Fell English and IBM Plex Mono from Volume I. DejaVu Serif for Book II mathematical glyphs."
+      "notes": "IM Fell English and IBM Plex Mono from Volume I. DejaVu Serif for mathematical glyphs."
+    },
+    "books/02_liber_secundus/canon/play_skew_vault_canon.py": {
+      "source": "Liber II Section IV + openai/math Family 155 Skew-Product Model",
+      "hand": "Clean-room 3-axis Thue-Morse & Sturmian Just Intonation synthesizer & Pure Data Vanilla exporter",
+      "tree_sha256": "9804fcafd924adcb0844042f7357045a8eff861028ba363f205f27b36c6b18ca",
+      "commit": "c2f155a",
+      "visibility": "public",
+      "notes": "Synthesizes the 48 kHz stereo 3-axis Thue-Morse & Sturmian polymetric canon contrasting d=2 period-12 planar lock against d=3 non-repeating vault courses, and emits skew_vault_polymetric_canon.pd."
+    },
+    "books/03_liber_tertius/plates/tabulae.py": {
+      "source": "openai/math Family 369 (HotSpots.lean, Apache-2.0) + Chladni (1787)",
+      "hand": "Clean-room 170x220mm non-convex luthiery acoustic resonator Tabula & PDF leaf",
+      "tree_sha256": "0449676dfaba4a884536defe41777242346b4d5c67e4cab8ad148482c0c49933",
+      "commit": "adc7f12",
+      "visibility": "public",
+      "notes": "Generates Tabula VII (Cista Resonantiae Chladniana) solving the 6-mode Neumann Laplacian on a non-convex C-bout viol plate with boundary hot-spot bow tangent, 2-hole & 3D starlike foils, monochord eigenfrequency rail, shift +17 charakteres, and lifted-pen colophon."
+    },
+    "books/04_liber_quartus/plates/tabulae.py": {
+      "source": "openai/math Families 242 & 241 (Single-Fold Diophantine & DegreeRigidity.lean, Apache-2.0)",
+      "hand": "Clean-room 170x220mm Gödel-Diophantine astrolabe & diagonal Tabula & PDF leaf",
+      "tree_sha256": "081fe43fdee61603d9b64cc5b66d08ab7e9f1dc78495b6ea9eafa658411cb623",
+      "commit": "adc7f12",
+      "visibility": "public",
+      "notes": "Generates Tabula VIII (Speculum Diophantinum) with 16-prime Gödel astrolabe, Pell-Matiyasevich hyperbola lunettes, 8x8 Cantor anti-diagonal chamber, rigid Turing-degree poset, shift +19 self-referential charakteres, and lifted-pen colophon."
     }
   },
   "starter_archive": {
     "name": "codex-series-starter-template-books1-2.zip",
     "sha256": "bcc799882539e9f70c2ae4165870cda0f74bfa9553565465ec758dac10c958a8"
-  }
+  },
+  "supplemental_archives": [
+    {
+      "name": "codex-series-starter-template-books1-4.zip",
+      "sha256": "b2c6c4a55597c827e41f5ae7eafee953b5f8f6928cfb8fc82e1cd13190d0957e"
+    }
+  ]
 }
