@@ -1,0 +1,44 @@
+{
+  "series": "Codex Series",
+  "volume_number": "II",
+  "slug": "Codex_Speculorum",
+  "title": "Codex Speculorum",
+  "subtitle": "Liber Canonum — Of Symmetry, Logic, Canon & Remainder",
+  "trim_pt": [504.0, 720.0],
+  "palette": {
+    "paper": "#ede6d4",
+    "ink": "#161918",
+    "red": "#a32b24",
+    "mute": "#5a4331"
+  },
+  "books": [
+    {
+      "id": "00_prologus",
+      "title": "De Officio Mensuratoris",
+      "kind": "parable",
+      "reading_pdf": "books/00_prologus/out/00_prologus_reading.pdf",
+      "illustrated_pdf": "books/00_prologus/out/00_prologus_illustrated.pdf"
+    },
+    {
+      "id": "01_liber_primus",
+      "title": "Liber I · Speculum Cancrizans",
+      "kind": "treatise",
+      "reading_pdf": "books/01_liber_primus/out/01_liber_primus_reading.pdf",
+      "illustrated_pdf": "books/01_liber_primus/out/01_liber_primus_illustrated.pdf"
+    },
+    {
+      "id": "02_liber_secundus",
+      "title": "Liber II · Bibliotheca Sine Periodo",
+      "kind": "treatise",
+      "reading_pdf": "books/02_liber_secundus/out/02_liber_secundus_reading.pdf",
+      "illustrated_pdf": "books/02_liber_secundus/out/02_liber_secundus_illustrated.pdf"
+    },
+    {
+      "id": "07_clausa",
+      "title": "Quaestio & Nota Clausa",
+      "kind": "clausa",
+      "reading_pdf": "books/07_clausa/out/07_clausa_reading.pdf",
+      "illustrated_pdf": "books/07_clausa/out/07_clausa_illustrated.pdf"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# Codex Speculorum gatherings
+
+The [volume manifest](../volume.json) sets the order and component PDF paths.
+
+| Module | Contents |
+| --- | --- |
+| [`00_prologus`](00_prologus) | De Officio Mensuratoris |
+| [`01_liber_primus`](01_liber_primus) | Speculum Cancrizans, Tabulae I–V, and the playable crab canon |
+| [`02_liber_secundus`](02_liber_secundus) | Bibliotheca Sine Periodo and Tabula VI |
+| [`07_clausa`](07_clausa) | Closing Quaestio and ground-ordered Nota Clausa |
+
+Companion standalone volumes (such as card decks) should live outside `books/`
+under a separate `companions/` directory so `books/` reflects only bound
+gatherings of the current volume.

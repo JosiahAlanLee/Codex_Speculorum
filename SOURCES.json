@@ -1,0 +1,57 @@
+{
+  "as_of": "2026-11-15",
+  "entries": {
+    "common/illum/furniture.py": {
+      "source": "JosiahAlanLee/Codex-Intervallorum",
+      "hand": "Extracted starter press scaffold",
+      "tree_sha256": "f603b07d0e3311885895e93fe26f54391f9404b442442dbd187331ab2cc87a15",
+      "commit": "cbd7012",
+      "visibility": "public",
+      "notes": "Shared 504x720 pt furniture, ink triad (#ede6d4 / #161918 / #a32b24), and font loader with graceful system fallback."
+    },
+    "docs/objections/validate.py": {
+      "source": "JosiahAlanLee/Codex-Intervallorum",
+      "hand": "Extracted starter press scaffold",
+      "tree_sha256": "bcc92afb75cffd2a722433a854748ef08ab915e16b8af3c77fa1719dd3a0d3ce",
+      "commit": "cbd7012",
+      "visibility": "public",
+      "notes": "Append-only Right of Reply grammar and --base immutability validator."
+    },
+    "common/illustrations/shader_plates.py": {
+      "source": "Argon HydraPy Demo Suites + openai/math (Apache-2.0)",
+      "hand": "Clean-room SVG plotter & 96-dpi vellum port",
+      "tree_sha256": "bfea5845427ac740f5cc32d06515a9a090fd22fee32f2cd4fa892507b980fa30",
+      "commit": "vol2-tabulae-port-b2",
+      "visibility": "public",
+      "notes": "Ports 4D Hopf fibration, Conformal Möbius & 7/16 4D Hyper-Vault, Strict Hot-Spots Neumann Eigenmodes (openai/math Family 369), Koopman-Bhairav Crab Canon, and hidden-line-eliminated 3D Aperiodic Vault (openai/math Family 155)."
+    },
+    "books/01_liber_primus/canon/play_koopman_canon.py": {
+      "source": "nrro_cleanroom_av_engine.py + build_bhairav_entropy_scene.py",
+      "hand": "Clean-room Just Intonation Crab Canon synthesizer & Pure Data exporter",
+      "tree_sha256": "9b8880c5080c087a8e33df61e149fbc9e4f2ca8f7a90a3a42c728fe994b6ad93",
+      "commit": "b002c3d",
+      "visibility": "public",
+      "notes": "Synthesizes the 32-pulse Raag Bhairav retrograde-inversion Crab Canon (r_recta * r_cancri = 2:1) at 48 kHz stereo and emits koopman_raag_crab_canon.pd."
+    },
+    "books/02_liber_secundus/plates/tabulae.py": {
+      "source": "openai/math Family 155 (PeriodicTilingThree.lean, Apache-2.0)",
+      "hand": "Clean-room 170x220mm non-repeating vault Tabula & PDF leaf",
+      "tree_sha256": "e9a54279af29d276da80b047e96b1216457770b322e39d7c87e44eaabff7a37f",
+      "commit": "adc7f12",
+      "visibility": "public",
+      "notes": "Generates Tabula VI (Fornix Sine Periodo) with isometric triangle-lattice hidden-line elimination, D=2 vs D=3 medallions, shift +13 charakteres, and lifted-pen colophon."
+    },
+    "common/fonts": {
+      "source": "JosiahAlanLee/Codex-Intervallorum and DejaVu Fonts 2.37",
+      "hand": "Typeface binaries and license notices",
+      "commit": "cbd7012714197c638931b500922936727efdf64f",
+      "visibility": "public",
+      "tree_sha256": "b88fa694a01d66c33e5d42f233462dab9ded894fd413d823e1bf3d57795b9e11",
+      "notes": "IM Fell English and IBM Plex Mono from Volume I. DejaVu Serif for Book II mathematical glyphs."
+    }
+  },
+  "starter_archive": {
+    "name": "codex-series-starter-template-books1-2.zip",
+    "sha256": "bcc799882539e9f70c2ae4165870cda0f74bfa9553565465ec758dac10c958a8"
+  }
+}

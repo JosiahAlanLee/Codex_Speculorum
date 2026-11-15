@@ -1,0 +1,27 @@
+name: Validate Objections Register
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  objections:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate register syntax
+        run: python docs/objections/validate.py
+      - name: Verify append-only history on PRs
+        if: github.event_name == 'pull_request'
+        run: |
+          git show "origin/${GITHUB_BASE_REF}:docs/objections/register.md" > /tmp/base_register.md
+          python docs/objections/validate.py docs/objections/register.md --base /tmp/base_register.md

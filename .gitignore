@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+binding/out/
+books/*/out/
+books/*/build/
+books/*/*/out/
+dist/
+*.tmp.pdf

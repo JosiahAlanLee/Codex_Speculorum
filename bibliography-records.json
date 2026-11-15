@@ -1,0 +1,81 @@
+{
+  "records": [
+    {
+      "keys": ["I/S1"],
+      "section": "Bibliography",
+      "citation": "Mersenne, Marin (1636). Harmonie universelle, contenant la théorie et la pratique de la musique. Paris: Sébastien Cramoisy.",
+      "inspection": "Verified exact integer comma ratio 3^12 / 2^19 = 531441 / 524288 in Liber I.",
+      "use": "Establishes non-closure of iterated superparticular ratios against octave powers."
+    },
+    {
+      "keys": ["I/S2"],
+      "section": "Bibliography",
+      "citation": "Hopf, Heinz (1931). Über die Abbildungen der dreidimensionalen Sphäre auf die Kugelfläche. Mathematische Annalen, 104(1), 637–665.",
+      "inspection": "Verified algebraically via unit-norm S3 fibers and discrete Gauss linking integral |Lk| = 1 in common/illustrations/shader_plates.py.",
+      "use": "Grounds Tabula II (De Fibra Quaternaria) stereographic S3 -> R3 fibration and linked Villarceau circles."
+    },
+    {
+      "keys": ["I/S3"],
+      "section": "Bibliography",
+      "citation": "Möbius, August Ferdinand (1855). Die Theorie der Kreisverwandtschaft in rein geometrischer Darstellung. Abhandlungen der Königlich Sächsischen Gesellschaft der Wissenschaften, 4, 529–595.",
+      "inspection": "Verified numerically for 90-degree conformal orthogonality across isothermal Apollonian circles in common/illustrations/shader_plates.py.",
+      "use": "Grounds Tabula III (De Speculo Mobiano) conformal inversion grid and two-generator loxodromic limit circles."
+    },
+    {
+      "keys": ["I/S4"],
+      "section": "Bibliography",
+      "citation": "OpenAI Mathematical Corpus (2026). Family 369: Strict Hot-Spots Conjecture on Smooth Bounded Simply Connected Planar Domains (StrictHotSpots.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/369.md).",
+      "inspection": "Inspected lean/docs/369.md and verified numerically on the isotropic Neumann Laplacian solver in common/illustrations/shader_plates.py.",
+      "use": "Grounds Tabula IV (De Calore in Limite) nonvanishing interior Neumann gradient streamlines and boundary-only thermal extrema."
+    },
+    {
+      "keys": ["I/S5"],
+      "section": "Bibliography",
+      "citation": "OpenAI Mathematical Corpus (2026, October 6–7). Revision History & Withdrawal Notice: Algebraicity of Weil classes on split abelian eightfolds; Algebraicity of Kuga–Satake Correspondences for K3 Surfaces; The rational Hodge conjecture for products of K3 surfaces (https://github.com/openai/math/blob/main/history.md; https://github.com/openai/math/blob/main/preprints/Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026/README.md).",
+      "inspection": "Inspected October 7, 2026 withdrawal record documenting I_new = I(f_1) - m = -2m != 0 under reverse stabilization traces.",
+      "use": "Grounds the Liber I Disputatio & Obiectio on why formal symmetry fails when a stabilization-trace sign inverts."
+    },
+    {
+      "keys": ["I/S6"],
+      "section": "Bibliography",
+      "citation": "Rigidity, flexibility, and a sign error (2026, October 22). Preprint analysis of obstructed Lagrangian immersions and the residual degree-2 self-intersection point p in the withdrawn K3 Hodge manuscripts (https://arxiv.org/html/2610.30976v1).",
+      "inspection": "Inspected Summary & Section 3.2 showing Gromov-Lees h-principle stabilization leaves an unremovable degree-2 double point p.",
+      "use": "Grounds the Liber I Responsum distinguishing flexible formal elegance from rigid topological obstruction."
+    },
+    {
+      "keys": ["II/S1"],
+      "section": "Bibliography",
+      "citation": "Bhattacharya, Siddhartha (2020). Periodicity and decidability of tilings of Z^2. American Journal of Mathematics, 142(1), 255–266 (surveyed with quantitative periodicization in https://www.researchgate.net/publication/301844179_Periodicity_and_decidability_of_tilings_of_Z2).",
+      "inspection": "Verified planar periodic-complement theorem for finite translational tiles in Z^2 vs. dimension-three failure.",
+      "use": "Establishes that every single finite translational tile of Z^2 admits a fully periodic tiling."
+    },
+    {
+      "keys": ["II/S2"],
+      "section": "Bibliography",
+      "citation": "Greenfeld, Rachel, & Tao, Terence (2022–2024). A counterexample to the periodic tiling conjecture (https://arxiv.org/html/2209.08451v1; https://arxiv.org/html/2211.15847v3).",
+      "inspection": "Inspected abstract and announcement proving failure of the Periodic Tiling Conjecture in sufficiently high dimension via p-adically structured functional equations.",
+      "use": "Grounds the high-dimensional disproof preceding the sharp minimal-dimension question d = 3."
+    },
+    {
+      "keys": ["II/S3"],
+      "section": "Bibliography",
+      "citation": "OpenAI Mathematical Corpus (2026). Family 155: A counterexample to periodic tiling in dimension three / A translational tile with no fully periodic tiling in dimension three (PeriodicTilingThree.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/155.md; Lean theorem statement at https://prove2.me/theorems/c384612f-9658-4aff-bf84-1336e003988b).",
+      "inspection": "Inspected lean/docs/155.md and OAI.PeriodicTilingThree.periodic_tiling_counterexample_and_minimality verifying finite T subset Z^3, unit-cube thickening in R^3, absence of any finite-index period subgroup, and sharp minimality d = 3.",
+      "use": "Grounds Liber II (Bibliotheca Sine Periodo) and Tabula VI's contrast between d = 2 periodicity and d = 3 non-periodic translational vaults."
+    },
+    {
+      "keys": ["II/S4"],
+      "section": "Bibliography",
+      "citation": "Borges, Jorge Luis (1941). La biblioteca de Babel. In El jardín de senderos que se bifurcan. Buenos Aires: Editorial Sur.",
+      "inspection": "Referenced for the closing hypothesis of the Eternal Traveler's periodic Order in a hexagonal gallery.",
+      "use": "Frames the Liber II dialogue testing whether translational regularity across three spatial axes entails periodic recurrence."
+    },
+    {
+      "keys": ["Pr/R1"],
+      "section": "Project records",
+      "citation": "Codex Series Press Scaffold (2026). Extracted architectural baseline from JosiahAlanLee/Codex-Intervallorum (commit cbd7012) with Volume II Liber I & Liber II ports.",
+      "inspection": "Verified offline via scripts/build.py and binding/validate_typeset.py.",
+      "use": "Establishes shared 7x10 trim, 96-dpi mathematical vellum washes, rubricated falsifier scales, and ground-ordered Nota Clausa interface."
+    }
+  ]
+}
