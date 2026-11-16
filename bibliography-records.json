@@ -29,12 +29,13 @@
     },
     {
       "keys": [
-        "I/S4"
+        "I/S4",
+        "III/S3"
       ],
       "section": "Bibliography",
-      "citation": "OpenAI Mathematical Corpus (2026). Family 369: Strict Hot-Spots Conjecture on Smooth Bounded Simply Connected Planar Domains (StrictHotSpots.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/369.md).",
-      "inspection": "Inspected lean/docs/369.md and verified numerically on the isotropic Neumann Laplacian solver in common/illustrations/shader_plates.py.",
-      "use": "Grounds Tabula IV (De Calore in Limite) nonvanishing interior Neumann gradient streamlines and boundary-only thermal extrema."
+      "citation": "OpenAI Mathematical Corpus (2026, September 24). Family 369: Strict hot spots and absence of interior critical points on smooth simply connected planar domains (HotSpots.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/369.md; https://github.com/openai/math/blob/main/lean/ComparatorChallenges/HotSpots.lean); nonsmooth conformal extension in https://arxiv.org/html/2610.32920v1.",
+      "inspection": "Inspected lean/docs/369.md: the formalized statement gives nonvanishing interior gradient for every nonzero eigenfunction in the first positive Neumann eigenspace on every nonempty smooth bounded simply connected planar domain, multiplicity included; the comparator file is HotSpots.lean. Verified numerically on the isotropic Neumann solver and the 3,946-node waisted viol solver in common/illustrations/shader_plates.py.",
+      "use": "Grounds Tabula IV (De Calore in Limite) boundary-only thermal extrema in Liber I and Liber III (Cista Resonantiae) with Tabula VII's non-convex resonator verification."
     },
     {
       "keys": [
@@ -50,8 +51,8 @@
         "I/S6"
       ],
       "section": "Bibliography",
-      "citation": "Rigidity, flexibility, and a sign error (2026, October 22). Preprint analysis of obstructed Lagrangian immersions and the residual degree-2 self-intersection point p in the withdrawn K3 Hodge manuscripts (https://arxiv.org/html/2610.30976v1).",
-      "inspection": "Inspected Summary & Section 3.2 showing Gromov-Lees h-principle stabilization leaves an unremovable degree-2 double point p.",
+      "citation": "Lekili, Yanki, & Sheridan, Nick (2026, October 22). Rigidity, flexibility, and a sign error. arXiv:2610.30976 [math.SG] (https://arxiv.org/abs/2610.30976). Analysis of the withdrawn Weil-classes / Kuga-Satake / K3 Hodge manuscripts.",
+      "inspection": "Inspected abstract and Section 1: the sign error is traced to a convention mismatch (standard sign of self-intersection points in the cited sources versus the opposite convention used implicitly by the withdrawn manuscript, reportedly first pointed out to OpenAI by Nathan Humphrey), and the degree-2 self-intersection point p is identified as the cost of h-principle flexibility and the source of obstructedness.",
       "use": "Grounds the Liber I Responsum distinguishing flexible formal elegance from rigid topological obstruction."
     },
     {
@@ -110,15 +111,6 @@
     },
     {
       "keys": [
-        "III/S3"
-      ],
-      "section": "Bibliography",
-      "citation": "OpenAI Mathematical Corpus (2026). Family 369: Strict hot spots and absence of interior critical points on smooth simply connected planar domains (HotSpots.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/369.md; https://github.com/openai/math/blob/main/lean/ComparatorChallenges/HotSpots.lean; nonsmooth conformal extension in https://arxiv.org/html/2610.32920v1).",
-      "inspection": "Inspected lean/docs/369.md confirming nonvanishing interior gradient across every nonzero first positive Neumann eigenfunction on smooth bounded simply connected planar domains, without convexity or simplicity assumptions.",
-      "use": "Grounds Liber III (Cista Resonantiae) and the 4,603-node non-convex waisted viol resonator verification in Tabula VII."
-    },
-    {
-      "keys": [
         "III/S4"
       ],
       "section": "Bibliography",
@@ -167,8 +159,8 @@
         "IV/S4"
       ],
       "section": "Bibliography",
-      "citation": "OpenAI Mathematical Corpus (2026). Family 242: Single-fold Diophantine representations and undecidability under an at-most-one-solution promise (Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/242.md; cataloged at https://kisonecat.github.io/openai-math/mathematical-logic.html).",
-      "inspection": "Inspected Lean formalization scope establishing single-fold polynomial Diophantine representations for every recursively enumerable subset of N^n (n >= 1) and undecidability under at-most-one-solution promises.",
+      "citation": "OpenAI Mathematical Corpus (2026). Family 242: Single-fold Diophantine representations and undecidability under an at-most-one-solution promise (SingleFold.lean, Apache-2.0, https://github.com/openai/math/blob/main/lean/docs/242.md; cataloged at https://kisonecat.github.io/openai-math/mathematical-logic.html).",
+      "inspection": "Inspected lean/docs/242.md: the formalization establishes a single-fold integer polynomial representation for every recursively enumerable subset of N^n (n >= 1); the scope note states that undecidability under an at-most-one-solution promise is not separately formalized, so Liber IV derives it as a one-line reduction from the halting set.",
       "use": "Grounds Liber IV (Testis Unicus) and Tabula VIII's single-fold witness fiber projection."
     },
     {

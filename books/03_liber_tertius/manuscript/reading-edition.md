@@ -102,24 +102,35 @@ second-order Neumann problem governed by Family 369 ([III/S3]).
 
 [V] Tabula VII (*Cista Resonantiae Chladniana*) tests Family 369 numerically on a smooth,
 markedly **non-convex** waisted viol contour Φ_viol(x, y) ≤ 1 (pinched 30% inward at the
-C-bouts, 4,603 finite-volume nodes). Solving the discrete Neumann eigenproblem confirms
+C-bouts; 3,946 finite-volume nodes on the default 0.90 mm grid of
+`solve_viol_acoustic_resonator()`). [E] Solving the discrete Neumann eigenproblem confirms
 mean(u₂) = 0, places both global extrema strictly on the purfling rim (P₊ at the upper
 bowing crown and P₋ at the lower bout), and verifies min |∇u₂| > 0 across every interior
-node despite the non-convex waist constriction. Remarkably, the pinched C-bouts tune the
-second positive mode μ₃ to an almost exact luthiery octave above the fundamental
-(√(μ₃ / μ₂) = 2.0004), plotted along the Helmholtz monochord rail beneath four spandrel
-foils contrasting higher overtones (u₄, u₅) against the two-hole planar trap ([III/S2])
-and the three-dimensional starlike trap ([III/S5]).
+node despite the non-convex waist constriction. The pinched C-bouts tune the second
+positive mode μ₃ to within a seventh of a percent of a luthiery octave above the
+fundamental (√(μ₃ / μ₂) = 1.9973 on that grid; the rail on the plate rounds it to
+2.00×), and `test_manuscript_claims.py` holds this prose to the solver's output. The
+rail runs beneath four spandrel foils contrasting higher overtones (u₄, u₅) against the
+two-hole planar trap ([III/S2]) and the three-dimensional starlike trap ([III/S5]).
 
 [PLATE: tabula_vii]
 
 ## IV · Criterion Falsificationis & Canon Resonantiae
 
-[E] For the lutemaker and modular synthesist alike, Family 369 translates into an operational
-patching rule on any unpierced planar resonator: bowing or driving at the boundary pole P₊
-maximally couples into the fundamental dipole u₂, whereas damping at the rim endpoints of
-the central nodal ribbon u₂ = 0 suppresses the fundamental completely and isolates the
-2.00× octave mode u₃ without encountering a single dead interior pocket.
+[H] For the lutemaker and modular synthesist alike, the solved modes suggest a patching
+rule on any unpierced planar resonator, under the model in which a point driver or damper
+exchanges energy with each mode in proportion to that mode's amplitude at the contact
+(squared, for a damper). The two lowest modes of the waisted plate are separable by port
+alone: u₂ is the longitudinal dipole, with its nodal ribbon across the waist, while the
+2.00× mode u₃ is the transverse dipole, with its nodal line running the length of the
+long axis. [E] At the poles P₊ and P₋ the solver gives |u₂| = 1 and |u₃| < 0.01; at the
+two rim endpoints of the waist ribbon it gives |u₂| < 0.05 and |u₃| ≈ 0.6. [H] Bowing at
+P₊ therefore couples maximally into the fundamental and leaves the octave silent; driving
+at either waist-rim endpoint excites u₃ while leaving u₂ silent. A damper at the waist
+rim suppresses u₃, not the fundamental; to quiet u₂ one damps at a pole. The numerical
+solve computes undamped Neumann modes only. A measured transfer function in which a
+waist-rim drive excited u₂, or a pole drive excited u₃, would refute this rule without
+touching Family 369.
 
 [V] What observation would refute Liber III and overturn Tabula VII? Exhibiting a nonempty
 smooth bounded simply connected domain Ω in R² together with a nonzero eigenfunction u in

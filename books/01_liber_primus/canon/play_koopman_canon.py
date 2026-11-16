@@ -7,7 +7,8 @@ Playable Koopman / Raag Bhairav Crab Canon (`Canon Cancrizans Koopmanianus`):
      Just Intonation scale `(1/1, 16/15, 5/4, 4/3, 3/2, 8/5, 15/8, 2/1)` is
      strictly closed under multiplicative octave inversion `I(r) = 2 / r`, and
      that every vertical dyad in the 32-pulse Crab Canon is a pure 5-limit
-     consonance (`1:1, 6:5, 5:4, 4:3, 3:2`).
+     consonance drawn from `{1:1, 6:5, 5:4, 4:3, 3:2, 8:5, 5:3, 2:1}` (this
+     Vox Recta realizes exactly `1:1, 6:5, 5:4, 4:3`).
   2. Synthesizes a 48.0-second `48 kHz` stereo WAV realization
      (`canon_cancrizans_bhairav_koopman.wav`) pairing a Jawari Rudra-Veena
      waveguide (`Vox Recta`, left-center) against a bowed/plucked phase-mirror
