@@ -17,11 +17,14 @@ import unittest
 import numpy as np
 
 from common.illustrations.shader_plates import solve_viol_acoustic_resonator
+from docs.objections import validate as obj_validate
 
 REPO = Path(__file__).resolve().parents[2]
 LIBER_I = REPO / "books" / "01_liber_primus" / "manuscript" / "reading-edition.md"
 LIBER_III = REPO / "books" / "03_liber_tertius" / "manuscript" / "reading-edition.md"
 CANON = REPO / "books" / "01_liber_primus" / "canon" / "play_koopman_canon.py"
+TABULAE_V = REPO / "books" / "05_liber_quintus" / "plates" / "tabulae.py"
+REGISTER = REPO / "docs" / "objections" / "register.md"
 
 
 def _load_canon_module():
@@ -106,6 +109,23 @@ class TestLiberIIIProseMatchesSolver(unittest.TestCase):
             j, i = rim[k]
             self.assertLess(abs(u2[j, i]), 0.05)
             self.assertGreater(abs(u3[j, i]), 0.5)
+
+
+class TestTabulaIXReadsTheRegister(unittest.TestCase):
+    def test_tally_matches_register_entries_and_dispositions(self):
+        spec = importlib.util.spec_from_file_location("tabulae5", TABULAE_V)
+        mod = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(mod)
+        entries = obj_validate.parse_register(REGISTER.read_text(encoding="utf-8"))
+        tally = mod.register_tally()
+        self.assertEqual(len(tally), len(entries))
+        self.assertEqual(tally, [obj_validate.status(e) != "open" for e in entries])
+        geom = mod.colophon_geometry(tally=tally)
+        self.assertEqual(geom["n_tally"], len(entries))
+        n_red_uprights = sum(1 for pts, _ in geom["red_strokes"] if len(pts) == 2 and pts[0][0] == pts[1][0] and abs(pts[1][1] - pts[0][1] - 8.0) < 1e-9)
+        self.assertEqual(n_red_uprights, sum(tally))
+        self.assertLessEqual(len(mod.FALSIFIER_IX), 50)
 
 
 if __name__ == "__main__":

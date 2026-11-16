@@ -72,6 +72,14 @@
       "commit": "adc7f12",
       "visibility": "public",
       "notes": "Generates Tabula VIII (Speculum Diophantinum) with 16-prime Gödel astrolabe, Pell-Matiyasevich hyperbola lunettes, 8x8 Cantor anti-diagonal chamber, rigid Turing-degree poset, shift +19 self-referential charakteres, and lifted-pen colophon."
+    },
+    "books/05_liber_quintus/plates/tabulae.py": {
+      "source": "JosiahAlanLee/Codex_Speculorum (books/04_liber_quartus/plates/tabulae.py pattern) + docs/objections/register.md",
+      "hand": "Clean-room 170x220mm colophon Tabula & PDF leaf drafted by Claude (Fable 5.1), 2026-11-15",
+      "tree_sha256": "882b5e0118ecb8faa6a27fd8a13f80ebaeee50c7b623cd83530ee51446b4785d",
+      "commit": "liber-v-sine-auctore",
+      "visibility": "public",
+      "notes": "Generates Tabula IX (Colophon Sine Auctore): Charta/Sententia/Probatio with Comparator bracket and rubricated Hiatus, the empty byline cartouche with three strokes that stop short, and a register tally read live from docs/objections/register.md; shift +23 charakteres, lifted-pen colophon."
     }
   },
   "starter_archive": {

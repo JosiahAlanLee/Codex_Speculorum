@@ -51,6 +51,13 @@
       "illustrated_pdf": "books/04_liber_quartus/out/04_liber_quartus_illustrated.pdf"
     },
     {
+      "id": "05_liber_quintus",
+      "title": "Liber V · Mathematica Sine Auctore",
+      "kind": "treatise",
+      "reading_pdf": "books/05_liber_quintus/out/05_liber_quintus_reading.pdf",
+      "illustrated_pdf": "books/05_liber_quintus/out/05_liber_quintus_illustrated.pdf"
+    },
+    {
       "id": "07_clausa",
       "title": "Quaestio & Nota Clausa",
       "kind": "clausa",

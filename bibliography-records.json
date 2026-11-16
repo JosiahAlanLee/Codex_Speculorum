@@ -174,6 +174,69 @@
     },
     {
       "keys": [
+        "V/S1"
+      ],
+      "section": "Bibliography",
+      "citation": "Hardy, G. H. (1940; AMS Chelsea reprint 1999). Ramanujan: Twelve Lectures on Subjects Suggested by His Life and Work. Cambridge University Press / Providence: AMS Chelsea. Lecture I quoted at https://cse.iitk.ac.in/users/amit/books/hardy-1999-ramanujan-twelve-lectures.html; the 16 January 1913 letter, Hardy's 8 February 1913 reply and his judgment quoted at https://mathshistory.st-andrews.ac.uk/SH/hardy_sh.pdf and https://www.imsc.res.in/~rao/ramanujan/newnow/CPsnow.htm.",
+      "inspection": "Shelf-check unfinished: the lectures were not opened for this edition. Inspected the three pages above for Hardy's dates, his demand for proofs, his 'imagination to invent them' judgment, and his remark that religion played no important part in Ramanujan's life except in a strictly material sense.",
+      "use": "Grounds the Liber V account of the 1913 letter and of Hardy as the audit layer for proofless formulae."
+    },
+    {
+      "keys": [
+        "V/S2"
+      ],
+      "section": "Bibliography",
+      "citation": "Alladi, Krishnaswami (2016, September). Touched by the Goddess (review of The Man Who Knew Infinity). Inference: International Review of Science, 2(3) (https://inference-review.com/article/touched-by-the-goddess). Kanigel, Robert (1991). The Man Who Knew Infinity. New York: Scribner.",
+      "inspection": "Inspected Alladi's review: the family's veneration of Namagiri at Namakkal, the legend that the formulas came in dreams, the absence of proofs in the notebooks, and the statement that some formulas in the 1913 letters were already known and others incorrect as stated. Kanigel not opened for this edition.",
+      "use": "Grounds the ascription regime in Liber V §II: credit to an unreachable principal, error with the copyist."
+    },
+    {
+      "keys": [
+        "V/S3"
+      ],
+      "section": "Bibliography",
+      "citation": "Ramanujan, S. (1916). On certain arithmetical functions. Transactions of the Cambridge Philosophical Society, 22(9), 159-184. Deligne, Pierre (1974). La conjecture de Weil. I. Publications mathématiques de l'IHÉS, 43, 273-307.",
+      "inspection": "Shelf-check unfinished: standard references, not opened for this edition. The lineage claim (tau(p) bound asserted 1916, proved by Deligne 1974 via the Weil conjectures, generalized as temperedness) is cross-checked only against the Family 014 abstracts in openai/math CONTENTS.md (V/S4).",
+      "use": "Grounds the one line in Liber V where a proposition Ramanujan asserted without proof is carried forward by the corpus."
+    },
+    {
+      "keys": [
+        "V/S4"
+      ],
+      "section": "Bibliography",
+      "citation": "OpenAI Mathematical Corpus (2026). Family 014: Restricted geometric Langlands, global Arthur enhancements, and generic Ramanujan; with Ramanujan-Arthur Decompositions of Cuspidal Functions at Full Finite Level (24 September 2026) and Temperedness at ramified places for globally generic exceptional groups (5 October 2026). CONTENTS.md at commit 4eaee875 (https://github.com/openai/math/blob/main/CONTENTS.md).",
+      "inspection": "Inspected CONTENTS.md entries for Family 014 and the two companion abstracts: the generalized Ramanujan conjecture claimed for globally generic cuspidal representations of split adjoint exceptional groups over global function fields, tempered at every place. Also grepped the full catalogue (373 families) for partitions, mock theta functions, q-series, Rogers-Ramanujan, tau/Lehmer and the pi series: no hits.",
+      "use": "Grounds the claim in Liber V §II that Family 014 is the corpus's only Ramanujan-lineage result and that none of his signature objects appear."
+    },
+    {
+      "keys": [
+        "V/S5"
+      ],
+      "section": "Bibliography",
+      "citation": "Raayoni, Gal, Gottlieb, Shahar, Manor, Yahel, Pisha, George, Harris, Yoav, Mendlovic, Uri, Haviv, Doron, Hadad, Yaron, & Kaminer, Ido (2021). Generating conjectures on fundamental constants with the Ramanujan Machine. Nature, 590(7844), 67-73 (https://doi.org/10.1038/s41586-021-03229-4); Technion release note at https://www.technion.ac.il/en/2021/02/the-ramanujan-machine/.",
+      "inspection": "Inspected the article's first page and the Technion note: the system generates conjectured continued-fraction formulas for fundamental constants without proving them, was named for Ramanujan on that account, and its conjectures were proved afterwards by community contributions.",
+      "use": "Grounds the Liber V observation that the conjecturing role was automated before the proving role."
+    },
+    {
+      "keys": [
+        "V/S6"
+      ],
+      "section": "Bibliography",
+      "citation": "OpenAI (2026). openai/math repository at commit 4eaee875: README.md (unnamed internal model; manuscripts as raw research data; deferral to the community on credit, precedence and concurrent work), preprint README and CITATION.bib author field 'OpenAI', history.md (7 October 2026 withdrawals, 300/719 top-line results formalized), and the withdrawal notice at preprints/Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026/README.md (https://github.com/openai/math).",
+      "inspection": "Inspected each file named in the citation on 15 November 2026. The withdrawal notice identifies the +1 sign on reverse stabilization traces, computes I_new = -2m, names the Eliashberg-Murphy cancellation theorem whose hypothesis fails, and states that the withdrawal concerns the proof and does not assert that the statement is false.",
+      "use": "Grounds the institution regime in Liber V §II and the Tabula IX leaves Charta / Sententia / Probatio."
+    },
+    {
+      "keys": [
+        "V/S7"
+      ],
+      "section": "Bibliography",
+      "citation": "Lean FRO (2025-2026). Comparator: a trustworthy judge for Lean proofs (https://github.com/leanprover/comparator; Reservoir listing https://reservoir.lean-lang.org/@leanprover/Comparator). The Lean Language Reference, 'Validating a Lean Proof' (https://lean-lang.org/doc/reference/4.35.0-rc3/ValidatingProofs/). openai/math lean/ComparatorChallenges/HotSpots.lean at commit 4eaee875.",
+      "inspection": "Inspected the Comparator README (guarantees: proves the same statement as the challenge, permitted axioms only, kernel-accepted) and the reference manual's remaining-assumptions list, which includes no human error or misleading presentation of the statement in the trusted challenge file and separates having a valid proof from what the statement means. Inspected HotSpots.lean: no author line; the definitions of SmoothBoundary, AdmissibleDomain, HasH1Gradient and the first Neumann eigenspace are fixed in the challenge itself.",
+      "use": "Grounds the verification regime in Liber V §II, the Hiatus interval on Tabula IX, and the plate's refuting proposition."
+    },
+    {
+      "keys": [
         "Pr/R1"
       ],
       "section": "Project records",
