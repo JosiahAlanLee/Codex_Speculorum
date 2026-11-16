@@ -65,8 +65,10 @@ the monochord, yet 3^12 = 531,441 exceeds 2^19 = 524,288 by the Pythagorean comm
 of approximately 23.46 cents ([I/S1]). Any circular diagram that conceals this
 gap has merely swept the wolf into an uninspected twelfth key.
 
-[E] In exact integer arithmetic, no positive power of a superparticular ratio
-(n + 1)/n can equal an integer power of 2, because n and n + 1 are coprime. [V]
+[E] In exact integer arithmetic, for every integer n > 1 no positive power of the
+superparticular ratio (n + 1)/n can equal an integer power of 2: if (n + 1)^p = 2^k n^p
+then n divides (n + 1)^p, which coprimality forbids. The octave itself (n = 1,
+ratio 2/1) is the lone superparticular that closes, and it closes trivially. [V]
 Throughout Codex Speculorum, therefore, every geometric plate engraves the exact
 proposition that would refute it along its outer biliteral tick-scale, indexed
 clockwise from a rubricated L-mark at the top-left corner.
@@ -94,7 +96,7 @@ degrees everywhere away from the two rubricated foci.
 
 [D] Third, on any smooth bounded simply connected planar domain, the formalized
 Strict Hot-Spots theorem in Family 369 of the October 2026 OpenAI mathematical
-corpus (`StrictHotSpots.lean`, [I/S4]) establishes that every first positive
+corpus (`HotSpots.lean`, [I/S4]) establishes that every first positive
 Neumann eigenfunction u_1 has strictly nonvanishing interior gradient (|grad u_1|
 greater than 0). Consequently, neither hottest peak nor coldest trough can hide
 in the interior (`Tabula IV`): every extremum cleaves strictly to the boundary.
@@ -122,14 +124,18 @@ mode:
 without a single out-of-mode accidental or wolf comma (`Tabula V`). In our canon
 (`books/01_liber_primus/canon/play_koopman_canon.py` and `koopman_raag_crab_canon.pd`,
 tuned to `Sa = C3 = 130.81 Hz`), the two voices open on `1:1` unison, weave thirty
-consecutive pure five-limit thirds, fourths, and fifths (`6:5`, `5:4`, `4:3`, `3:2`)
-across eight Koopman spatial eigenmodes, exchange `komal Dha` and `Ga` across the
-central `Axis 2:1` barline, and reunite on `2:1` upper unison:
+consecutive pure five-limit thirds and fourths (the vertical dyad set of this
+Vox Recta is exactly `1:1`, `6:5`, `5:4`, `4:3`; no fifth happens to arise, though
+the mode permits one) across eight Koopman spatial eigenmodes,
+exchange `komal Dha` and `Ga` across the central `Axis 2:1` barline, and reunite on
+`2:1` upper unison. The score below is printed from the same `build_canon_score()`
+table that renders the WAV and the Pure Data patch, and `test_manuscript_claims.py`
+fails the build if the two ever diverge:
 
 > `Bars 1-4 Recta : Sa  m  P  r | G  m  P  d | P  m  G  r | Sa G  m  P`
-> `Bars 1-4 Cancri: Sa  r  G  m | P  d  N  S'| r  G  m  P | m  P  d  G`
+> `Bars 1-4 Cancri: Sa  r  G  m | P  d  N  S'| N  d  P  m | m  P  d  G`
 > `Bars 5-8 Recta : d   G  m  P | P  m  G  r | Sa r  G  m | P  d  N  S'`
-> `Bars 5-8 Cancri: m   P  d  S'| r  G  m  P | G  m  P  d | r  P  m  Sa`
+> `Bars 5-8 Cancri: m   P  d  S'| N  d  P  m | G  m  P  d | N  m  P  S'`
 
 [PLATE: tabula_v]
 

@@ -573,7 +573,7 @@ def solve_strict_hotspots_neumann(cx: float = 85.0, cy: float = 101.0, h_mm: flo
     """
     Solves the isotropic 5-point finite-volume Neumann Laplacian `-Delta u = lambda_1 u`
     on the smooth simply connected vault domain `Phi(x, y) <= 1` and verifies
-    `openai/math` Family 369 (`StrictHotSpots.lean`).
+    `openai/math` Family 369 (`HotSpots.lean`).
     """
     xs = np.arange(cx - 46.0, cx + 46.0 + 0.5 * h_mm, h_mm, dtype=np.float64)
     ys = np.arange(cy - 56.0, cy + 56.0 + 0.5 * h_mm, h_mm, dtype=np.float64)
@@ -1401,6 +1401,7 @@ def solve_viol_acoustic_resonator(cx: float = 85.0, cy: float = 98.5, h_mm: floa
         "phi": phi,
         "inside": inside,
         "field_u2": field_u2,
+        "field_u3": unpack_mode(2),
         "field_u4": unpack_mode(3),
         "field_u5": unpack_mode(4),
         "gx": gx_grid,

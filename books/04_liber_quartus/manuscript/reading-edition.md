@@ -40,19 +40,26 @@ LOGOTHETA: Slide your fingers down the rubricated diagonal of the eight-by-eight
 this table—and turn to `Tabula VIII`, which is already engraving our eight exchanges. Eight
 catalogue rows list whether the k-th polynomial vanishes on input k; below the frame sits the
 inverted anti-diagonal register Δ_k = 1 − M[k, k], flipping every diagonal stone into an empty
-crosshair and every crosshair into a stone. Now substitute the Gödel number g of that inverted
-rule into itself: *"The unique witness tuple y for polynomial g does not exist."*
+crosshair and every crosshair into a stone. Ask your Censor to shelve Δ as the g-th row of his
+own catalogue. He cannot: at column g the new row would have to disagree with itself. The
+inverted rule is a perfectly good predicate, and it stands outside every catalogue built
+from the rows it inverts. That is the whole of the diagonal, and it needs no stone to speak.
 
-SCHOLIASTES: Wait—if that sentence had its single witness tuple y, the polynomial would vanish,
-proving the sentence false! Yet because no witness tuple exists, what the sentence says of
-itself—that its solitary chair stands empty—is altogether true! Even under a promise of strict
-uniqueness, no machine can tell an impossible equation from one whose unique witness waits
-ten-to-the-millionth steps further down the stair!
+SCHOLIASTES: Then the Censor's uniqueness decree has not closed the catalogue—it has only
+thinned it. But surely a thinned catalogue is at last decidable? With one chair per equation,
+the machine need only look to see whether the chair is filled!
 
-LOGOTHETA: Worse still for your mirrors, Señor. At our eighth turn—under prime 19, which shifts
-the cipher caption beneath `Tabula VIII` ("THIS CAPTION HAS NO SECOND WITNESS")—you might hope
-that the hierarchy of unsolvable problems at least reflects itself in a Crab Canon like `Liber I`,
-swapping one oracle degree with a twin. It does not. Every order-preserving symmetry of the
+LOGOTHETA: Take the one ledger you already know no machine can finish: the halting catalogue,
+which lists every program that ever stops. Your Censor's decree, granted in full, hands that
+ledger a polynomial with exactly one chair per halting program and no chair at all for the
+rest. Now set your machine to decide, for any equation that is promised at most one chair,
+whether the chair is filled. Feed it the halting polynomial, program by program. It would
+decide the halting catalogue. The promise of uniqueness is kept to the letter, and
+undecidability walks straight through it, because nothing in the promise says how far down
+the stair the single chair may stand. Worse still for your mirrors, Señor: at this, our eighth
+turn—under prime 19, which shifts the cipher caption beneath `Tabula VIII` ("THIS CAPTION HAS
+NO SECOND WITNESS")—you might hope that the hierarchy of unsolvable problems at least reflects
+itself in a Crab Canon like `Liber I`, swapping one oracle degree with a twin. It does not. Every order-preserving symmetry of the
 Turing degrees is the identity. At the summit of unsolvability, the mirror shows only one face,
 and it cannot be reversed.
 
@@ -71,7 +78,8 @@ exponential computation histories, often admitting infinitely many or multiply-b
 witnesses when a computation can be padded. In 1974 Matiyasevich asked whether **single-fold**
 polynomial representations always exist—eliminating all witness multiplicity ([IV/S3]).
 Family 242 of the October 2026 OpenAI mathematical corpus (*Single-fold Diophantine
-representations*, [IV/S4]) settles the conjecture affirmatively in machine-checked Lean:
+representations*, `SingleFold.lean`, [IV/S4]) settles the conjecture affirmatively in
+machine-checked Lean:
 
 > 1. Universal Single-Fold Representation: Every recursively enumerable subset S of Nⁿ
 > (n ≥ 1) admits an integer polynomial P(x, y₁, …, y_m) that has **exactly one** complete
@@ -79,9 +87,16 @@ representations*, [IV/S4]) settles the conjecture affirmatively in machine-check
 > does not belong to S. This establishes both the single-fold and finite-fold Diophantine
 > conjectures.
 
-> 2. Undecidability Under a Uniqueness Promise: Consequently, deciding whether a polynomial
-> Diophantine equation over N has a solution remains algorithmically undecidable even under
-> the promise that it possesses **at most one** solution.
+[E] The corpus's scope note states that the consequence below is *not* separately
+formalized ([IV/S4]); this press derives it in one reduction. Let K be the halting set and
+P_K its single-fold polynomial from (1). For every x the equation P_K(x, y) = 0 has at
+most one solution, so every instance satisfies the at-most-one-solution promise. A decision
+procedure for solvability under that promise, applied to P_K(x, ·), would decide membership
+in K. Hence:
+
+> 2. Undecidability Under a Uniqueness Promise: Deciding whether a polynomial Diophantine
+> equation over N has a solution remains algorithmically undecidable even under the promise
+> that it possesses **at most one** solution.
 
 [D] Right beside Family 242 in the corpus stands Family 241 (`DegreeRigidity.lean`, *Rigidity
 of the Turing degrees*, [IV/S5]), resolving the Slaman–Woodin rigidity problem: every order
